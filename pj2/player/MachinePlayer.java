@@ -171,11 +171,9 @@ public class MachinePlayer extends Player {
 
     if (side == COMPUTER){
       best.setBestScore(alpha);
-      curColor = this.color;
     }
     else{
       best.setBestScore(beta);
-      curColor = getHumanColor();
     }
 
     DList legalMoveList = this.legalMoveList(this.getSideColor(side), this.board);
@@ -192,11 +190,11 @@ public class MachinePlayer extends Player {
         // Undo change
         if (tryMove.moveKind == Board.STEP){
           Move undoMove = new Move(tryMove.x2, tryMove.y2, tryMove.x1, tryMove.y1);
-          this.board(undoMove, this.getSideColor(side));
+          this.board.setBoard(undoMove, this.getSideColor(side));
         }else if(tryMove.moveKind == Board.ADD){
-          this.board.setBoard((tryMove, EMPTY);  
+          this.board.setBoard(tryMove, EMPTY);
         }
-        
+
         // MAXIMUM MODE
         if (side == COMPUTER && reply.getBestScore() > best.getBestScore()){
           best.setBestMove((Move)walker.item());

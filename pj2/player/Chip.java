@@ -26,6 +26,7 @@ public class Chip{
   private Chip prev;
 	private boolean visited;
   private int dist;
+  private int depth;
 
 
   public final static int BLACK = 0;
@@ -40,6 +41,7 @@ public class Chip{
 
     this.prev = null;
 		this.visited = false;
+    this.depth = -1;
     this.dist = -1;
 
 		this.edges = new DList();
@@ -55,6 +57,14 @@ public class Chip{
 
   public void setDist(int distance){
     this.dist = distance;
+  }
+
+  public void setDepth(int depth){
+    this.depth = depth;
+  }
+
+  public int getDepth(){
+    return this.depth;
   }
 
   public Chip getPrev(){
@@ -225,6 +235,32 @@ public class Chip{
       }
   	}
     return false;
+  }
+
+  public boolean isStartGoal(){
+    return (this.x == 0 && this.color == WHITE) || (this.y == 0 && this.color == BLACK);
+  }
+
+  public boolean isEndGoal(){
+    return (this.x == 7 && this.color == WHITE) || (this.y == 7 && this.color == BLACK);
+  }
+
+  public boolean isStright(Chip v2){
+    if (prev == null){
+      return false;
+    }
+
+    if( prev.getX() == x && x == v2.getX()){
+      return true;
+    }else if (prev.getY() == y && y == v2.getY()) {
+      return true;
+    }
+    else if ( ( prev.getX() - x == prev.getY() - y && x - v2.getX() == y - v2.getY() ) ||
+              ( prev.getX() - x == y - prev.getY() && x - v2.getX() == v2.getY() - y ) ){
+      return true;
+    }else{
+      return false;
+    }
   }
 
 }

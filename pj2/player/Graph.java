@@ -84,9 +84,9 @@ public class Graph{
   	**/
   public boolean isWin(int color){
     if (color == WHITE) {
-      return this.bfsWhite();
+      return this.dfsWhite();
     }else if (color == BLACK) {
-      return this.bfsBlack();
+      return this.dfsBlack();
     }
     return false;
   }
@@ -96,9 +96,9 @@ public class Graph{
   	**/
   public boolean isLose(int color){
     if (color == WHITE) {
-      return this.bfsBlack();
+      return this.dfsBlack();
     }else if (color == BLACK) {
-      return this.bfsWhite();
+      return this.dfsWhite();
     }
     return false;
   }
@@ -107,12 +107,12 @@ public class Graph{
 		*
 		*
   	**/
-  private boolean bfsWhite(){
+  private boolean dfsWhite(){
     try{
       DListNode walker = (DListNode)this.whiteGraph.front();
       while(walker.isValidNode()){
-        if(((Chip)walker.item()).getX() == 0){
-          if (breadthFirstSearch(whiteGraph, (Chip)walker.item(), WHITE)){
+        if(((Chip)walker.item()).isStartGoal()){
+          if (depthFirstSearch(whiteGraph, (Chip)walker.item(), WHITE)){
             return true;
           }
         }
@@ -124,12 +124,12 @@ public class Graph{
     return false;
   }
 
-  private boolean bfsBlack(){
+  private boolean dfsBlack(){
     try{
       DListNode walker = (DListNode)this.blackGraph.front();
       while(walker.isValidNode()){
-        if(((Chip)walker.item()).getY() == 0){
-          if (breadthFirstSearch(blackGraph, (Chip)walker.item(), BLACK)){
+        if( ((Chip)walker.item()).isStartGoal() ){
+          if (depthFirstSearch(blackGraph, (Chip)walker.item(), BLACK)){
             return true;
           }
         }
@@ -142,51 +142,39 @@ public class Graph{
     return false;
   }
 
-/*
-  private boolean breadthFirstSearch(DList givenGraph, Chip start, int color){
+  private boolean depthFirstSearch(DList givenGraph, Chip start, int color){
     try{
       DListNode walker = (DListNode)givenGraph.front();
       while(walker.isValidNode()){
         ((Chip)walker.item()).setVisited(false);
+        ((Chip)walker.item()).setDepth(-1);
         ((Chip)walker.item()).setPrev(null);
         walker = (DListNode)walker.next();
       }
       
+      start.setDepth(0);
       DList stack = new DList();
       stack.insertFront(start);
       while (!stack.isEmpty()){
         Chip v = (Chip)stack.pop();
 
-
         if (!v.getVisited()) {
           v.setVisited(true);
-
-          // check if there is a win
-          if(v.getX() == 7 && color == WHITE){
-            if(this.trackBackStep(v) >= 6){
-              return true;
-            }else{
-              v.setVisited(false);
-              continue;
-            }
-
-          }else if (v.getY() == 7 && color == BLACK) {
-            if(this.trackBackStep(v) >= 6){
-              return true;  
-            }else{
-              v.setVisited(false);
-              continue;
-            }
-            
-          }
 
           // for all edges from v to w in Graph put into stack
           walker = (DListNode)v.getEdges().front();
           while(walker.isValidNode()){
-
-            if (!((Chip)walker.item()).getVisited()) {
-              ((Chip)walker.item()).setPrev(v);
-              stack.insertFront(walker.item());  
+            if (v.isStright((Chip)walker.item())) {      
+              // reach other goal at least through 6 nodes
+              if(v.getDepth() >= 4 && ((Chip)walker.item()).isEndGoal()){
+                return true;
+              }else if (!((Chip)walker.item()).isEndGoal()) {
+                if (!((Chip)walker.item()).getVisited()) {
+                  ((Chip)walker.item()).setPrev(v);
+                  ((Chip)walker.item()).setDepth(v.getDepth() + 1);
+                  stack.insertFront(walker.item());
+                }              
+              }              
             }
             walker = (DListNode)walker.next();
           }
@@ -197,8 +185,11 @@ public class Graph{
     }
     return false;
   }
-*/
 
+
+
+
+/*
   private boolean breadthFirstSearch(DList givenGraph, Chip start, int color){
     try{
       DListNode walker = (DListNode)givenGraph.front();
@@ -237,31 +228,7 @@ public class Graph{
     return false;
   }
 
-  private boolean isEndGoal(Chip chip, int color){
-    return (chip.getX() == 7 && color == WHITE) || (chip.getY() == 7 && color == BLACK);
-  }
-
-  private boolean isStright(Chip v1, Chip v2){
-    if (v1.getPrev() == null){
-      return false;
-
-    }
-
-    if( v1.getPrev().getX() == v1.getX() && v1.getX() == v2.getX()){
-      return true;
-    }else if (v1.getPrev().getY() == v1.getY() && v1.getY() == v2.getY()) {
-      return true;
-    }
-    else if ((v1.getPrev().getX() - v1.getX() == v1.getPrev().getY() - v1.getY() &&
-               v1.getX() - v2.getX() == v1.getY() - v2.getY()) ||
-             (v1.getPrev().getX() - v1.getX() == v1.getY() - v1.getPrev().getY() &&
-               v1.getX() - v2.getX() == v2.getY() - v1.getY()) ){
-      return true;
-    }else{
-      return false;
-    }
-  }
-
+*/  
 /*
   private int trackBackStep (Chip start){
     int step = 0;
