@@ -3,6 +3,9 @@
 package player;
 import list.*;
 import dict.*;
+
+
+//test for git hub
 //================================================================================
 // (4) determineing whether a game board contains any networks for a given player
 //================================================================================
@@ -11,6 +14,81 @@ import dict.*;
 	* to find whether or not it is win network.
 	* Also store the number of pair.
 	**/
+
+//test for git hub
+//================================================================================
+// (4) determineing whether a game board contains any networks for a given player
+//================================================================================
+/**
+  * NetworkIdentifier, class that combine all connects into a graph. and DFS,
+  * to find whether or not it is win network.
+  * Also store the number of pair.
+  **///test for git hub
+//================================================================================
+// (4) determineing whether a game board contains any networks for a given player
+//================================================================================
+/**
+  * NetworkIdentifier, class that combine all connects into a graph. and DFS,
+  * to find whether or not it is win network.
+  * Also store the number of pair.
+  **///test for git hub
+//================================================================================
+// (4) determineing whether a game board contains any networks for a given player
+//================================================================================
+/**
+  * NetworkIdentifier, class that combine all connects into a graph. and DFS,
+  * to find whether or not it is win network.
+  * Also store the number of pair.
+  **///test for git hub
+//================================================================================
+// (4) determineing whether a game board contains any networks for a given player
+//================================================================================
+/**
+  * NetworkIdentifier, class that combine all connects into a graph. and DFS,
+  * to find whether or not it is win network.
+  * Also store the number of pair.
+  **///test for git hub
+//================================================================================
+// (4) determineing whether a game board contains any networks for a given player
+//================================================================================
+/**
+  * NetworkIdentifier, class that combine all connects into a graph. and DFS,
+  * to find whether or not it is win network.
+  * Also store the number of pair.
+  **///test for git hub
+//================================================================================
+// (4) determineing whether a game board contains any networks for a given player
+//================================================================================
+/**
+  * NetworkIdentifier, class that combine all connects into a graph. and DFS,
+  * to find whether or not it is win network.
+  * Also store the number of pair.
+  **///test for git hub
+//================================================================================
+// (4) determineing whether a game board contains any networks for a given player
+//================================================================================
+/**
+  * NetworkIdentifier, class that combine all connects into a graph. and DFS,
+  * to find whether or not it is win network.
+  * Also store the number of pair.
+  **///test for git hub
+//================================================================================
+// (4) determineing whether a game board contains any networks for a given player
+//================================================================================
+/**
+  * NetworkIdentifier, class that combine all connects into a graph. and DFS,
+  * to find whether or not it is win network.
+  * Also store the number of pair.
+  **///test for git hub
+//================================================================================
+// (4) determineing whether a game board contains any networks for a given player
+//================================================================================
+/**
+  * NetworkIdentifier, class that combine all connects into a graph. and DFS,
+  * to find whether or not it is win network.
+  * Also store the number of pair.
+  **/
+
 
 public class Graph{
 
