@@ -150,7 +150,6 @@ public class MachinePlayer extends Player {
     Best best = new Best();
     Best reply;
     int score;
-    int curColor;
 
     // implement hashtable for search
     Entry boardPair = this.hashtable.find(this.board);
@@ -184,13 +183,20 @@ public class MachinePlayer extends Player {
     try{
       DListNode walker = (DListNode)legalMoveList.front();
       while (walker.isValidNode()){
+        Move tryMove = (Move)walker.item();
 
         // Change the board
-        this.board.setBoard(((Move)walker.item()), curColor);
+        this.board.setBoard(tryMove, this.getSideColor(side));
         // Recursive call
         reply = minimaxSearch(!side, depth - 1, alpha, beta);
+        
         // Undo change
-        this.board.setBoard(((Move)walker.item()), EMPTY);
+        if (tryMove.moveKind == STEP){
+          Move undoMove = new Move(tryMove.x2, tryMove.y2, tryMove.x1, tryMove.y1)  ;
+        }else{
+          this.board.setBoard(((Move)walker.item()), EMPTY);  
+        }
+        
   
         // MAXIMUM MODE
         if (side == COMPUTER && reply.getBestScore() > best.getBestScore()){

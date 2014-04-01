@@ -8,7 +8,7 @@ import dict.*;
 // (4) determineing whether a game board contains any networks for a given player
 //================================================================================
 /**
-	* NetworkIdentifier, class that combine all connects into a graph. and DFS,
+	* NetworkIdentifier, class that combine all connects into a graph. and bfs,
 	* to find whether or not it is win network.
 	* Also store the number of pair.
 	**/
@@ -29,7 +29,7 @@ public class Graph{
 
   
   /**
-  	* construct a graph that will be used for DFS.
+  	* construct a graph that will be used for bfs.
   	**/
   public Graph(Board board){
   	this.board = board;
@@ -80,25 +80,25 @@ public class Graph{
   }
 
   /**
-		* Identify a network is a win for player (i.e DFS for playerGraph)
+		* Identify a network is a win for player (i.e bfs for playerGraph)
   	**/
   public boolean isWin(int color){
     if (color == WHITE) {
-      return this.dfsWhite();
+      return this.bfsWhite();
     }else if (color == BLACK) {
-      return this.dfsBlack();
+      return this.bfsBlack();
     }
     return false;
   }
 
   /**
-		* Identify a network is a lise for player (i.e DFS for opponentGraph)
+		* Identify a network is a lise for player (i.e bfs for opponentGraph)
   	**/
   public boolean isLose(int color){
     if (color == WHITE) {
-      return this.dfsBlack();
+      return this.bfsBlack();
     }else if (color == BLACK) {
-      return this.dfsWhite();
+      return this.bfsWhite();
     }
     return false;
   }
@@ -107,12 +107,12 @@ public class Graph{
 		*
 		*
   	**/
-  private boolean dfsWhite(){
+  private boolean bfsWhite(){
     try{
       DListNode walker = (DListNode)this.whiteGraph.front();
       while(walker.isValidNode()){
         if(((Chip)walker.item()).getX() == 0){
-          if (depthFirstSearch(whiteGraph, (Chip)walker.item(), WHITE)){
+          if (breadthFirstSearch(whiteGraph, (Chip)walker.item(), WHITE)){
             return true;
           }
         }
@@ -124,12 +124,12 @@ public class Graph{
     return false;
   }
 
-  private boolean dfsBlack(){
+  private boolean bfsBlack(){
     try{
       DListNode walker = (DListNode)this.blackGraph.front();
       while(walker.isValidNode()){
         if(((Chip)walker.item()).getY() == 0){
-          if (depthFirstSearch(blackGraph, (Chip)walker.item(), BLACK)){
+          if (breadthFirstSearch(blackGraph, (Chip)walker.item(), BLACK)){
             return true;
           }
         }
@@ -143,7 +143,7 @@ public class Graph{
   }
 
 /*
-  private boolean depthFirstSearch(DList givenGraph, Chip start, int color){
+  private boolean breadthFirstSearch(DList givenGraph, Chip start, int color){
     try{
       DListNode walker = (DListNode)givenGraph.front();
       while(walker.isValidNode()){
@@ -199,7 +199,7 @@ public class Graph{
   }
 */
 
-  private boolean depthFirstSearch(DList givenGraph, Chip start, int color){
+  private boolean breadthFirstSearch(DList givenGraph, Chip start, int color){
     try{
       DListNode walker = (DListNode)givenGraph.front();
       while(walker.isValidNode()){
@@ -219,11 +219,14 @@ public class Graph{
         // for all edges from v to w in Graph put into stack
         walker = (DListNode)v.getEdges().front();
         while(walker.isValidNode()){
-          if(v.getDist() < 5 && ((Chip)walker.item()).getDist() == -1 && !this.isEndGoal((Chip)walker.item(), color)){
-            ((Chip)walker.item()).setDist(v.getDist() + 1);
-            queue.insertBack(walker.item());
-          }else if (v.getDist() >= 5 && this.isEndGoal((Chip)walker.item(), color)) {
-            return true;
+          if (!isStright(v, (Chip)walker.item())){
+            if(v.getDist() < 5 && ((Chip)walker.item()).getDist() == -1 && !this.isEndGoal((Chip)walker.item(), color)){
+              ((Chip)walker.item()).setDist(v.getDist() + 1);
+              ((Chip)walker.item()).setPrev(v);
+              queue.insertBack(walker.item());
+            }else if (v.getDist() >= 5 && this.isEndGoal((Chip)walker.item(), color)) {
+              return true;
+            }
           }
           walker = (DListNode)walker.next();
         }
@@ -238,6 +241,28 @@ public class Graph{
     return (chip.getX() == 7 && color == WHITE) || (chip.getY() == 7 && color == BLACK);
   }
 
+  private boolean isStright(Chip v1, Chip v2){
+    if (v1.getPrev() == null){
+      return false;
+
+    }
+
+    if( v1.getPrev().getX() == v1.getX() && v1.getX() == v2.getX()){
+      return true;
+    }else if (v1.getPrev().getY() == v1.getY() && v1.getY() == v2.getY()) {
+      return true;
+    }
+    else if ((v1.getPrev().getX() - v1.getX() == v1.getPrev().getY() - v1.getY() &&
+               v1.getX() - v2.getX() == v1.getY() - v2.getY()) ||
+             (v1.getPrev().getX() - v1.getX() == v1.getY() - v1.getPrev().getY() &&
+               v1.getX() - v2.getX() == v2.getY() - v1.getY()) ){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+/*
   private int trackBackStep (Chip start){
     int step = 0;
     if (start == null){
@@ -250,4 +275,6 @@ public class Graph{
     }
     return step;
   }
+*/
+
 }
