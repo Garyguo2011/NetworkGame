@@ -156,25 +156,36 @@ public class Graph{
       while (!stack.isEmpty()){
         Chip v = (Chip)stack.pop();
 
+
         if (!v.getVisited()) {
           v.setVisited(true);
 
           // check if there is a win
           if(v.getX() == 7 && color == WHITE){
-            if(this.trackBack(v).length() >= 6){
-              return true;  
+            if(this.trackBackStep(v) >= 6){
+              return true;
+            }else{
+              v.setVisited(false);
+              continue;
             }
+
           }else if (v.getY() == 7 && color == BLACK) {
-            if(this.trackBack(v).length() >= 6){
+            if(this.trackBackStep(v) >= 6){
               return true;  
+            }else{
+              v.setVisited(false);
+              continue;
             }
+            
           }
 
           // for all edges from v to w in Graph put into stack
           walker = (DListNode)v.getEdges().front();
           while(walker.isValidNode()){
-            stack.insertFront(walker.item());
-            ((Chip)walker.item()).setPrev(v);
+            if (!((Chip)walker.item()).getVisited()) {
+              ((Chip)walker.item()).setPrev(v);
+              stack.insertFront(walker.item());  
+            }
             walker = (DListNode)walker.next();
           }
         }
@@ -185,16 +196,16 @@ public class Graph{
     return false;
   }
 
-  private DList trackBack (Chip start){
-    DList path = new DList();
+  private int trackBackStep (Chip start){
+    int step = 0;
     if (start == null){
-      return path;
+      return step;
     }
     Chip walker = start;
     while(walker.getPrev() != null){
-      path.insertFront(walker);
+      step++;
       walker = walker.getPrev();
     }
-    return path;
+    return step;
   }
 }
