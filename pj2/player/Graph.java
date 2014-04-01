@@ -112,7 +112,7 @@ public class Graph{
       DListNode walker = (DListNode)this.whiteGraph.front();
       while(walker.isValidNode()){
         if(((Chip)walker.item()).isStartGoal()){
-          if (depthFirstSearch(whiteGraph, (Chip)walker.item(), WHITE)){
+          if (depthFirstSearch(whiteGraph, (Chip)walker.item())){
             return true;
           }
         }
@@ -129,7 +129,7 @@ public class Graph{
       DListNode walker = (DListNode)this.blackGraph.front();
       while(walker.isValidNode()){
         if( ((Chip)walker.item()).isStartGoal() ){
-          if (depthFirstSearch(blackGraph, (Chip)walker.item(), BLACK)){
+          if (depthFirstSearch(blackGraph, (Chip)walker.item())){
             return true;
           }
         }
@@ -142,6 +142,70 @@ public class Graph{
     return false;
   }
 
+  private boolean depthFirstSearch(DList givenGraph, Chip start){
+    try{
+      DListNode walker = (DListNode)givenGraph.front();
+      while(walker.isValidNode()){
+        ((Chip)walker.item()).setVisited(false);
+        walker = (DListNode)walker.next();
+      }
+    }catch(InvalidNodeException e){
+      System.out.println(e);
+    }
+    return depthFirstSearch(null, start, 0);
+  }
+
+  private boolean depthFirstSearch (Chip prev, Chip start, int depth){
+    if (depth >= 9){
+      return false;
+    }
+    boolean isfind = false;
+    
+    start.setVisited(true);
+    try{
+      DListNode walker = (DListNode)start.getEdges().front();
+      while(walker.isValidNode()){
+        Chip child = (Chip)walker.item();
+
+        if(!this.isStright(prev, start, child)){
+          if(depth > 4 && child.isEndGoal()){
+            return true;
+          }else if (!child.isEndGoal() && !child.isStartGoal()) {
+            if (child.getVisited() == false){
+              isfind = isfind || depthFirstSearch(start, child, depth + 1);
+              if (isfind == true){
+                return true;
+              }
+            }            
+          }
+        }
+        walker = (DListNode) walker.next();
+      }
+    }catch(InvalidNodeException e){
+      System.out.println(e + "**this part**");
+    }
+    return false;
+  }
+
+  private boolean isStright(Chip prev, Chip cur, Chip next){
+    if (prev == null){
+      return false;
+    }
+
+    if( prev.getX() == cur.getX() && cur.getX() == next.getX()){
+      return true;
+    }else if (prev.getY() == cur.getY() && cur.getY() == next.getY()) {
+      return true;
+    }
+    else if ( ( prev.getX() - cur.getX() == prev.getY() - cur.getY() && cur.getX() - next.getX() == cur.getY() - next.getY() ) ||
+              ( prev.getX() - cur.getX() == cur.getY() - prev.getY() && cur.getX() - next.getX() == next.getY() - cur.getY() ) ){
+      return true;
+    }else{
+      return false;
+    }    
+  }
+
+/*
   private boolean depthFirstSearch(DList givenGraph, Chip start, int color){
     try{
       DListNode walker = (DListNode)givenGraph.front();
@@ -185,9 +249,7 @@ public class Graph{
     }
     return false;
   }
-
-
-
+*/
 
 /*
   private boolean breadthFirstSearch(DList givenGraph, Chip start, int color){

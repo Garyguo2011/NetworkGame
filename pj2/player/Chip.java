@@ -23,9 +23,9 @@ public class Chip{
 	private DList edges;
 	private Board board;
   
-  private Chip prev;
+  // private Chip prev;
 	private boolean visited;
-  private int depth;
+  // private int depth;
 
   public final static int BLACK = 0;
   public final static int WHITE = 1;
@@ -37,9 +37,9 @@ public class Chip{
 		this.color = color;
 		this.board = board;
 
-    this.prev = null;
+    // this.prev = null;
 		this.visited = false;
-    this.depth = -1;
+    // this.depth = -1;
 
 		this.edges = new DList();
 	}
@@ -48,6 +48,7 @@ public class Chip{
 		this.visited = visited;
 	}
 
+/*
   public void setPrev(Chip parent){
     this.prev = parent;
   }
@@ -63,6 +64,7 @@ public class Chip{
   public Chip getPrev(){
     return this.prev;
   }
+*/
 
 	public boolean getVisited(){
 		return this.visited;
@@ -96,6 +98,13 @@ public class Chip{
 		this.edges.insertBack(other);
 	}
 
+  public boolean isStartGoal(){
+    return (this.x == 0 && this.color == WHITE) || (this.y == 0 && this.color == BLACK);
+  }
+
+  public boolean isEndGoal(){
+    return (this.x == 7 && this.color == WHITE) || (this.y == 7 && this.color == BLACK);
+  }
 
 	/**
 		* remove a edges between this chip to other chip
@@ -227,14 +236,9 @@ public class Chip{
     return false;
   }
 
-  public boolean isStartGoal(){
-    return (this.x == 0 && this.color == WHITE) || (this.y == 0 && this.color == BLACK);
-  }
 
-  public boolean isEndGoal(){
-    return (this.x == 7 && this.color == WHITE) || (this.y == 7 && this.color == BLACK);
-  }
 
+/*
   public boolean isStright(Chip v2){
     if (prev == null){
       return false;
@@ -252,5 +256,8 @@ public class Chip{
       return false;
     }
   }
+*/  
+
+  
 
 }
