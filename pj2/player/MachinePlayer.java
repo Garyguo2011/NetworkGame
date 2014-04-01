@@ -23,7 +23,6 @@ public class MachinePlayer extends Player {
   public final static boolean COMPUTER = true;
   public final static boolean HUMAN = false;
 
-  public final static int MAXCHIPS = 10;
   public final static int EMPTY = 2;
   public final static int WHITE = 1;
   public final static int BLACK = 0;
@@ -101,7 +100,7 @@ public class MachinePlayer extends Player {
 */
     this.hashtable = new HashTableChained();
     Move bestMove = minimaxSearch(COMPUTER, this.searchDepth, alpha, beta).getBestMove();
-    board.setBoard(bestMove, this.color);
+    this.board.setBoard(bestMove, this.color);
     if (bestMove.moveKind == Board.ADD)
       presentChips++;
     this.hashtable.makeEmpty();
@@ -115,7 +114,7 @@ public class MachinePlayer extends Player {
   // player.  This method allows your opponents to inform you of their moves.
   public boolean opponentMove(Move m) {
     if (isLegalMove(m, this.getHumanColor(), this.board) == true){
-      board.setBoard(m, this.getHumanColor());
+      this.board.setBoard(m, this.getHumanColor());
       if (m.moveKind == Board.ADD)
         presentChips++;
       return true;
@@ -130,7 +129,7 @@ public class MachinePlayer extends Player {
   // player to solve.
   public boolean forceMove(Move m) {
     if (isLegalMove(m, this.color, this.board) == true){
-      board.setBoard(m, this.color);
+      this.board.setBoard(m, this.color);
       if (m.moveKind == Board.ADD)
         presentChips++;
       return true;
@@ -151,6 +150,10 @@ public class MachinePlayer extends Player {
     Best reply;
     int score;
     int curColor;
+    int newx1;
+    int newx2;
+    int newy1;
+    int newy2;
 
     // implement hashtable for search
     Entry boardPair = this.hashtable.find(this.board);
@@ -190,8 +193,17 @@ public class MachinePlayer extends Player {
         // Recursive call
         reply = minimaxSearch(!side, depth - 1, alpha, beta);
         // Undo change
-        this.board.setBoard(((Move)walker.item()), EMPTY);
-  
+        if (((Move)walker.item()).moveKind == Board.ADD)
+          this.board.setBoard(((Move)walker.item()), EMPTY);
+        else if (((Move)walker.item()).moveKind == Board.STEP){
+          Move temp = (Move) walker.item();
+          newx1 = temp.x2;
+          newx2 = temp.x1;
+          newy1 = temp.y2;
+          newy2 = temp.y1;
+          Move newTemp = new Move(newx1, newy1, newx2, newy2);
+          this.board.setBoard(newTemp, curColor);
+        }
         // MAXIMUM MODE
         if (side == COMPUTER && reply.getBestScore() > best.getBestScore()){
           best.setBestMove((Move)walker.item());
@@ -229,6 +241,8 @@ public class MachinePlayer extends Player {
     **/
   public boolean isLegalMove(Move m, int color, Board testBoard){
     if (m.moveKind == Board.STEP){
+      if (m.x1 == m.x2 && m.y1 == m.y2)
+        return false;
       testBoard.setElementAt(m.x2, m.y2, EMPTY);
     }
     if (this.legalTest1(m) == true && this.legalTest2(m, color) == true && this.legalTest3(m, testBoard) == true && this.legalTest4(m, testBoard, color) == true){
@@ -305,7 +319,7 @@ public class MachinePlayer extends Player {
     int neighborY;
     for (int i = testMove.x1 - 1; i <= testMove.x1 + 1; i++){
       for (int j = testMove.y1 - 1; j <= testMove.y1 + 1; j++){
-        if ((i >= 0) && (i <= 7) && (j >= 0) && (j <= 7) && ((i != testMove.x1) || (j != testMove.y1))) {
+        if ((i >= 0) && (i <= Board.DIMENSION - 1) && (j >= 0) && (j <= Board.DIMENSION - 1) && ((i != testMove.x1) || (j != testMove.y1))) {
           if (testBoard.elementAt(i, j) == testColor){
             countNeighbors++;
             neighborList.insertBack(i*10+j);
@@ -324,7 +338,7 @@ public class MachinePlayer extends Player {
           neighborY = ((Integer) walker.item()) % 10;
           for (int i = neighborX - 1; i <= neighborX + 1; i++)
             for (int j = neighborY - 1; j <= neighborY + 1; j++)
-              if ((i >= 0) && (i <= 7) && (j >= 0) && (j <= 7) && (((i != testMove.x1) || (j != testMove.y1)) && ((i != neighborX) || (j != neighborY))))
+              if ((i >= 0) && (i <= Board.DIMENSION - 1) && (j >= 0) && (j <= Board.DIMENSION - 1) && (((i != testMove.x1) || (j != testMove.y1)) && ((i != neighborX) || (j != neighborY))))
                 if (testBoard.elementAt(i, j) == testColor)
                   return false;
           walker = (DListNode)walker.next();
@@ -344,13 +358,13 @@ public class MachinePlayer extends Player {
   //=========================================================================
   //============= (2) generating a list of all valid moves ==================
   //=========================================================================
-  private DList legalMoveList(int color, Board board){
+  private DList legalMoveList(int color, Board testBoard){
     DList legalList = new DList();
     if(presentChips < 20){
       for (int j = 0; j < Board.DIMENSION; j++){
         for (int i = 0; i < Board.DIMENSION; i++){
           Move testMove = new Move(i, j);
-          if (isLegalMove(testMove, color, board) == true){
+          if (isLegalMove(testMove, color, testBoard) == true){
             legalList.insertBack(testMove);
           }
         }
@@ -364,7 +378,7 @@ public class MachinePlayer extends Player {
           for (int j = 0; j < Board.DIMENSION; j++){
             for (int i = 0; i < Board.DIMENSION; i++){
               Move testMove = new Move(i, j, ((Chip)walker.item()).getX(), ((Chip)walker.item()).getY());
-              if (isLegalMove(testMove, color, board) == true){
+              if (isLegalMove(testMove, color, testBoard) == true){
                 legalList.insertBack(testMove);
               }
             }
