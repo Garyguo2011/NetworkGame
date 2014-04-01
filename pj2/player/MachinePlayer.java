@@ -14,6 +14,7 @@ public class MachinePlayer extends Player {
 
   private Board board;
   private int searchDepth;
+  private int presentChips;
 
   private HashTableChained hashtable;
 
@@ -43,6 +44,7 @@ public class MachinePlayer extends Player {
     this.color = color;
     this.searchDepth = 3;
     this.board = new Board();
+    presentChips = 0;
   }
 
   // Creates a machine player with the given color and search depth.  Color is
@@ -65,13 +67,9 @@ public class MachinePlayer extends Player {
     this.color = color;
     this.searchDepth = searchDepth;
     this.board = new Board();
+    presentChips = 0;
   }
 
-  public MachinePlayer(int color, int searchDepth, Board board) {
-    this.color = color;
-    this.searchDepth = searchDepth;
-    this.board = board;
-  }
 
   public int getHumanColor(){
     if (this.color == WHITE){
@@ -104,6 +102,8 @@ public class MachinePlayer extends Player {
     this.hashtable = new HashTableChained();
     Move bestMove = minimaxSearch(COMPUTER, this.searchDepth, alpha, beta).getBestMove();
     board.setBoard(bestMove, this.color);
+    if (bestMove.moveKind == Board.ADD)
+      presentChips++;
     this.hashtable.makeEmpty();
 
     return bestMove;
@@ -116,6 +116,8 @@ public class MachinePlayer extends Player {
   public boolean opponentMove(Move m) {
     if (isLegalMove(m, this.getHumanColor(), this.board) == true){
       board.setBoard(m, this.getHumanColor());
+      if (m.moveKind == Board.ADD)
+        presentChips++;
       return true;
     }
     return false;
@@ -129,6 +131,8 @@ public class MachinePlayer extends Player {
   public boolean forceMove(Move m) {
     if (isLegalMove(m, this.color, this.board) == true){
       board.setBoard(m, this.color);
+      if (m.moveKind == Board.ADD)
+        presentChips++;
       return true;
     }
     return false;
@@ -223,11 +227,11 @@ public class MachinePlayer extends Player {
     * @return true if m is legal m otherwise false.
     *
     **/
-  public boolean isLegalMove(Move m, int color, Board board){
+  public boolean isLegalMove(Move m, int color, Board testBoard){
     if (m.moveKind == Board.STEP){
-      board.setElementAt(m.x2, m.y2, EMPTY);
+      testBoard.setElementAt(m.x2, m.y2, EMPTY);
     }
-    if (this.legalTest1(m) == true && this.legalTest2(m, color) == true && this.legalTest3(m, board) == true && this.legalTest4(m, board, color) == true){
+    if (this.legalTest1(m) == true && this.legalTest2(m, color) == true && this.legalTest3(m, testBoard) == true && this.legalTest4(m, testBoard, color) == true){
       board.setElementAt(m.x2, m.y2, color);
       return true;
 
@@ -297,7 +301,6 @@ public class MachinePlayer extends Player {
   private boolean legalTest4(Move testMove, Board testBoard, int testColor){
     int countNeighbors = 0;
     DList neighborList = new DList();
-    int count = 0;
     int neighborX;
     int neighborY;
     for (int i = testMove.x1 - 1; i <= testMove.x1 + 1; i++){
@@ -308,7 +311,6 @@ public class MachinePlayer extends Player {
             neighborList.insertBack(i*10+j);
           }
         }
-        count++;
       }
     }
     if (countNeighbors >= 2){
@@ -344,7 +346,7 @@ public class MachinePlayer extends Player {
   //=========================================================================
   private DList legalMoveList(int color, Board board){
     DList legalList = new DList();
-    if(board.getNumOfChips(color) < MAXCHIPS){
+    if(presentChips < 20){
       for (int j = 0; j < Board.DIMENSION; j++){
         for (int i = 0; i < Board.DIMENSION; i++){
           Move testMove = new Move(i, j);
@@ -353,7 +355,7 @@ public class MachinePlayer extends Player {
           }
         }
       }  
-    }else if(board.getNumOfChips(color) == MAXCHIPS){
+    }else if(presentChips == 20){
       DList chips = board.getChips(color);
       try{
         DListNode walker = (DListNode)chips.front();
