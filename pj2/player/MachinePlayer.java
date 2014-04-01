@@ -41,7 +41,7 @@ public class MachinePlayer extends Player {
   // or 1 (white).  (White has the first move.)
   public MachinePlayer(int color) {
     this.color = color;
-    this.searchDepth = 2;
+    this.searchDepth = 3;
     this.board = new Board();
   }
 
@@ -163,6 +163,7 @@ public class MachinePlayer extends Player {
         score -= 10000 * (this.searchDepth - depth);
       }
       best.setBestScore(score);
+      best.setBestMove(new Move());
       return best;
     }
 
