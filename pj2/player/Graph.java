@@ -142,6 +142,7 @@ public class Graph{
     return false;
   }
 
+/*
   private boolean depthFirstSearch(DList givenGraph, Chip start, int color){
     try{
       DListNode walker = (DListNode)givenGraph.front();
@@ -182,6 +183,7 @@ public class Graph{
           // for all edges from v to w in Graph put into stack
           walker = (DListNode)v.getEdges().front();
           while(walker.isValidNode()){
+
             if (!((Chip)walker.item()).getVisited()) {
               ((Chip)walker.item()).setPrev(v);
               stack.insertFront(walker.item());  
@@ -194,6 +196,46 @@ public class Graph{
       System.out.println(e);
     }
     return false;
+  }
+*/
+
+  private boolean depthFirstSearch(DList givenGraph, Chip start, int color){
+    try{
+      DListNode walker = (DListNode)givenGraph.front();
+      while(walker.isValidNode()){
+        ((Chip)walker.item()).setVisited(false);
+        ((Chip)walker.item()).setPrev(null);
+        ((Chip)walker.item()).setDist(-1);
+        walker = (DListNode)walker.next();
+      }
+      
+      DList queue = new DList();
+
+      start.setDist(0);
+      queue.insertBack(start);
+      while (!queue.isEmpty()){
+        Chip v = (Chip)queue.pop();
+
+        // for all edges from v to w in Graph put into stack
+        walker = (DListNode)v.getEdges().front();
+        while(walker.isValidNode()){
+          if(v.getDist() < 5 && ((Chip)walker.item()).getDist() == -1 && !this.isEndGoal((Chip)walker.item(), color)){
+            ((Chip)walker.item()).setDist(v.getDist() + 1);
+            queue.insertBack(walker.item());
+          }else if (v.getDist() >= 5 && this.isEndGoal((Chip)walker.item(), color)) {
+            return true;
+          }
+          walker = (DListNode)walker.next();
+        }
+      }
+    }catch(InvalidNodeException e){
+      System.out.println(e);
+    }
+    return false;
+  }
+
+  private boolean isEndGoal(Chip chip, int color){
+    return (chip.getX() == 7 && color == WHITE) || (chip.getY() == 7 && color == BLACK);
   }
 
   private int trackBackStep (Chip start){

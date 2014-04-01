@@ -25,6 +25,7 @@ public class Chip{
   
   private Chip prev;
 	private boolean visited;
+  private int dist;
 
 
   public final static int BLACK = 0;
@@ -36,8 +37,11 @@ public class Chip{
 		this.y = y;
 		this.color = color;
 		this.board = board;
+
     this.prev = null;
 		this.visited = false;
+    this.dist = -1;
+
 		this.edges = new DList();
 	}
 
@@ -49,13 +53,21 @@ public class Chip{
     this.prev = parent;
   }
 
+  public void setDist(int distance){
+    this.dist = distance;
+  }
+
   public Chip getPrev(){
     return this.prev;
   }
 
 	public boolean getVisited(){
-		return visited;
+		return this.visited;
 	}
+
+  public int getDist(){
+    return this.dist;
+  }
 
 	public int getX(){
 		return this.x;
