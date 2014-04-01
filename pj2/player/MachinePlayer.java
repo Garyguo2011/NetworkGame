@@ -95,7 +95,12 @@ public class MachinePlayer extends Player {
   public Move chooseMove() {
     int alpha = Integer.MIN_VALUE; 
     int beta = Integer.MAX_VALUE;
+/*
+    currentScore = this.board.evaluate(this.color);
+    if (currentScore == WIN || currentScore == LOSE){
 
+    }
+*/
     this.hashtable = new HashTableChained();
     Move bestMove = minimaxSearch(COMPUTER, this.searchDepth, alpha, beta).getBestMove();
     board.setBoard(bestMove, this.color);
@@ -310,7 +315,7 @@ public class MachinePlayer extends Player {
           neighborY = ((Integer) walker.item()) % 10;
           for (int i = neighborX - 1; i <= neighborX + 1; i++)
             for (int j = neighborY - 1; j <= neighborY + 1; j++)
-              if ((i >= 0) && (i <= 7) && (j >= 0) && (j <= 7) && (((i != testMove.x1) && (j != testMove.y1)) || (i != neighborX) && (j != neighborY)))
+              if ((i >= 0) && (i <= 7) && (j >= 0) && (j <= 7) && (((i != testMove.x1) && (j != testMove.y1)) || ((i != neighborX) && (j != neighborY))))
                 if (testBoard.elementAt(i, j) == testColor)
                   return false;
           walker = (DListNode)walker.next();
