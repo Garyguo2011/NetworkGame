@@ -113,7 +113,8 @@ public class MachinePlayer extends Player {
   // illegal, returns false without modifying the internal state of "this"
   // player.  This method allows your opponents to inform you of their moves.
   public boolean opponentMove(Move m) {
-    if (isLegalMove(m, this.getHumanColor(), this.board) == true){
+
+    if (this.board.isLegalMove(m, this.getHumanColor()) == true){
       this.board.setBoard(m, this.getHumanColor());
       if (m.moveKind == Board.ADD)
         presentChips++;
@@ -128,7 +129,7 @@ public class MachinePlayer extends Player {
   // player.  This method is used to help set up "Network problems" for your
   // player to solve.
   public boolean forceMove(Move m) {
-    if (isLegalMove(m, this.color, this.board) == true){
+    if (this.board.isLegalMove(m, this.color) == true){
       this.board.setBoard(m, this.color);
       if (m.moveKind == Board.ADD)
         presentChips++;
@@ -176,7 +177,7 @@ public class MachinePlayer extends Player {
       best.setBestScore(beta);
     }
 
-    DList legalMoveList = this.legalMoveList(this.getSideColor(side), this.board);
+    DList legalMoveList = this.board.legalMoveList(this.getSideColor(side));
     try{
       DListNode walker = (DListNode)legalMoveList.front();
       while (walker.isValidNode()){
@@ -218,172 +219,6 @@ public class MachinePlayer extends Player {
     }
     return best;
   }
-
-
-//=========================================================================
-//============= (1) determining whether a move is valid ===================
-//=========================================================================  
-  /** 
-    * isLegalMove() determine whether a Move m is legal move or not.
-    * 
-    * @param m is a Move
-    * @return true if m is legal m otherwise false.
-    *
-    **/
-  public boolean isLegalMove(Move m, int color, Board testBoard){
-    if (m.moveKind == Board.STEP){
-      if (m.x1 == m.x2 && m.y1 == m.y2)
-        return false;
-      testBoard.setElementAt(m.x2, m.y2, EMPTY);
-    }
-    if (this.legalTest1(m) == true && this.legalTest2(m, color) == true && this.legalTest3(m, testBoard) == true && this.legalTest4(m, testBoard, color) == true){
-      board.setElementAt(m.x2, m.y2, color);
-      return true;
-
-    }
-    board.setElementAt(m.x2, m.y2, color);
-    return false;
-  }
-
-  /** 
-    * legalTest1() 
-    * whether a move is placed in any of the four corner.
-    **/
-  private boolean legalTest1(Move testMove){
-    if (testMove.x1 == 0 && testMove.y1 == 0){
-      return false;
-    }
-    if (testMove.x1 == 0 && testMove.y1 == 7){
-      return false;
-    }
-    if (testMove.x1 == 7 && testMove.y1 == 0){
-      return false;
-    }
-    if (testMove.x1 == 7 && testMove.y1 == 7){
-      return false;
-    }
-    return true;
-  }  
-
-  /** 
-    * legalTest2() 
-    * whether a move is placed in a goal of the opposite color.
-    **/
-  private boolean legalTest2(Move testMove, int testColor){
-    if (testColor == WHITE){
-      if (testMove.y1 == 0 || testMove.y1 == 7){
-        return false;
-      }
-      return true;
-    }
-    if (testColor == BLACK){
-      if (testMove.x1 == 0 || testMove.x1 == 7){
-        return false;
-      }
-      return true;
-    }
-    return false;
-  }
-
-  /** 
-    * legalTest3() 
-    * whether a move is placed in a square that is alread occupied
-    **/
-  private boolean legalTest3(Move testMove, Board testBoard){
-    if (testBoard.elementAt(testMove.x1, testMove.y1) == EMPTY){
-      return true;
-    }
-    else{
-      return false;
-    }
-  }
-
-  /** 
-    * legalTest4()
-    * A player may not have more than two chips in a connect group,
-    * whether connected orthogonally or diagonally.
-    **/
-  private boolean legalTest4(Move testMove, Board testBoard, int testColor){
-    int countNeighbors = 0;
-    DList neighborList = new DList();
-    int neighborX;
-    int neighborY;
-    for (int i = testMove.x1 - 1; i <= testMove.x1 + 1; i++){
-      for (int j = testMove.y1 - 1; j <= testMove.y1 + 1; j++){
-        if ((i >= 0) && (i <= Board.DIMENSION - 1) && (j >= 0) && (j <= Board.DIMENSION - 1) && ((i != testMove.x1) || (j != testMove.y1))) {
-          if (testBoard.elementAt(i, j) == testColor){
-            countNeighbors++;
-            neighborList.insertBack(i*10+j);
-          }
-        }
-      }
-    }
-    if (countNeighbors >= 2){
-      return false;
-    }
-    else if (countNeighbors == 1){
-      try{
-        DListNode walker = (DListNode)neighborList.front();
-        while(walker.isValidNode()){
-          neighborX = ((Integer) walker.item()) / 10;
-          neighborY = ((Integer) walker.item()) % 10;
-          for (int i = neighborX - 1; i <= neighborX + 1; i++)
-            for (int j = neighborY - 1; j <= neighborY + 1; j++)
-              if ((i >= 0) && (i <= Board.DIMENSION - 1) && (j >= 0) && (j <= Board.DIMENSION - 1) && (((i != testMove.x1) || (j != testMove.y1)) && ((i != neighborX) || (j != neighborY))))
-                if (testBoard.elementAt(i, j) == testColor)
-                  return false;
-          walker = (DListNode)walker.next();
-        }
-        return true;
-      }
-      catch(InvalidNodeException e){
-        System.out.println(e);
-      }
-    }
-    else{
-      return true;
-    }
-    return false;
-  }
-
-  //=========================================================================
-  //============= (2) generating a list of all valid moves ==================
-  //=========================================================================
-  private DList legalMoveList(int color, Board testBoard){
-    DList legalList = new DList();
-    if(presentChips < 20){
-      for (int j = 0; j < Board.DIMENSION; j++){
-        for (int i = 0; i < Board.DIMENSION; i++){
-          Move testMove = new Move(i, j);
-          if (isLegalMove(testMove, color, testBoard) == true){
-            legalList.insertBack(testMove);
-          }
-        }
-      }  
-    }else if(presentChips == 20){
-      DList chips = board.getChips(color);
-      try{
-        DListNode walker = (DListNode)chips.front();
-        while(walker.isValidNode()){
-
-          for (int j = 0; j < Board.DIMENSION; j++){
-            for (int i = 0; i < Board.DIMENSION; i++){
-              Move testMove = new Move(i, j, ((Chip)walker.item()).getX(), ((Chip)walker.item()).getY());
-              if (isLegalMove(testMove, color, testBoard) == true){
-                legalList.insertBack(testMove);
-              }
-            }
-          }              
-
-          walker = (DListNode)walker.next();
-        }
-      }catch(InvalidNodeException e){
-        System.out.println(e);
-      }    
-    }
-    return legalList;
-  }
-
 
 }
 
