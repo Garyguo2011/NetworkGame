@@ -224,9 +224,15 @@ public class MachinePlayer extends Player {
     *
     **/
   public boolean isLegalMove(Move m, int color, Board board){
-    if (this.legalTest1(m) == true && this.legalTest2(m, color) == true && this.legalTest3(m, board) == true && this.legalTest4(m, board, color) == true){
-      return true;
+    if (m.moveKind == Board.STEP){
+      board.setElementAt(m.x2, m.y2, EMPTY);
     }
+    if (this.legalTest1(m) == true && this.legalTest2(m, color) == true && this.legalTest3(m, board) == true && this.legalTest4(m, board, color) == true){
+      board.setElementAt(m.x2, m.y2, color);
+      return true;
+
+    }
+    board.setElementAt(m.x2, m.y2, color);
     return false;
   }
 
