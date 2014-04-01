@@ -25,9 +25,7 @@ public class Chip{
   
   private Chip prev;
 	private boolean visited;
-  private int dist;
   private int depth;
-
 
   public final static int BLACK = 0;
   public final static int WHITE = 1;
@@ -42,7 +40,6 @@ public class Chip{
     this.prev = null;
 		this.visited = false;
     this.depth = -1;
-    this.dist = -1;
 
 		this.edges = new DList();
 	}
@@ -53,10 +50,6 @@ public class Chip{
 
   public void setPrev(Chip parent){
     this.prev = parent;
-  }
-
-  public void setDist(int distance){
-    this.dist = distance;
   }
 
   public void setDepth(int depth){
@@ -74,10 +67,6 @@ public class Chip{
 	public boolean getVisited(){
 		return this.visited;
 	}
-
-  public int getDist(){
-    return this.dist;
-  }
 
 	public int getX(){
 		return this.x;
@@ -107,42 +96,43 @@ public class Chip{
 		this.edges.insertBack(other);
 	}
 
+
 	/**
 		* remove a edges between this chip to other chip
 		**/
-	public boolean removeEdge(Chip other){
-		try{
-  		DListNode walker = (DListNode)this.edges.front();
-  		while(walker.isValidNode()){
-  			if (((Chip)walker.item()).equals(other)) {
-  				walker.remove();
-  				return true;
-  			}
-  			walker = (DListNode)walker.next();
-  		}
-  	}catch(InvalidNodeException e){
-      System.out.println(e);
-    }
-    return false;
-	}
+	// public boolean removeEdge(Chip other){
+	// 	try{
+ //  		DListNode walker = (DListNode)this.edges.front();
+ //  		while(walker.isValidNode()){
+ //  			if (((Chip)walker.item()).equals(other)) {
+ //  				walker.remove();
+ //  				return true;
+ //  			}
+ //  			walker = (DListNode)walker.next();
+ //  		}
+ //  	}catch(InvalidNodeException e){
+ //      System.out.println(e);
+ //    }
+ //    return false;
+	// }
 
 	/**
 		* remove this chip and remove all edges from it.
 		**/
-	public void remove(){
-		try{
-  		DListNode walker = (DListNode)this.edges.front();
-  		while(walker.isValidNode()){
-  			DListNode walkerNext = (DListNode)walker.next();
-  			((Chip)walker.item()).removeEdge(this);
-  			walker.remove();
-  			walker = walkerNext;
-  		}
-  		this.edges = null;
-  	}catch(InvalidNodeException e){
-      System.out.println(e);
-    }
-	}
+	// public void remove(){
+	// 	try{
+ //  		DListNode walker = (DListNode)this.edges.front();
+ //  		while(walker.isValidNode()){
+ //  			DListNode walkerNext = (DListNode)walker.next();
+ //  			((Chip)walker.item()).removeEdge(this);
+ //  			walker.remove();
+ //  			walker = walkerNext;
+ //  		}
+ //  		this.edges = null;
+ //  	}catch(InvalidNodeException e){
+ //      System.out.println(e);
+ //    }
+	// }
 
 	public boolean equals(Chip other){
 		return this.x == other.getX() && 

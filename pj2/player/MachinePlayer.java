@@ -188,11 +188,14 @@ public class MachinePlayer extends Player {
         reply = minimaxSearch(!side, depth - 1, alpha, beta);
         
         // Undo change
-        if (tryMove.moveKind == Board.STEP){
+        if (tryMove.moveKind == Move.STEP){
           Move undoMove = new Move(tryMove.x2, tryMove.y2, tryMove.x1, tryMove.y1);
           this.board.setBoard(undoMove, this.getSideColor(side));
-        }else if(tryMove.moveKind == Board.ADD){
+        }else if(tryMove.moveKind == Move.ADD){
           this.board.setBoard(tryMove, EMPTY);
+        }else{
+          System.out.println("Error");
+          return null;
         }
 
         // MAXIMUM MODE
@@ -261,6 +264,21 @@ public class MachinePlayer extends Player {
     }
     if (testMove.x1 == 7 && testMove.y1 == 7){
       return false;
+    }
+
+    if (testMove.moveKind == Move.STEP){
+      if (testMove.x2 == 0 && testMove.y2 == 0){
+        return false;
+      }
+      if (testMove.x2 == 0 && testMove.y2 == 7){
+        return false;
+      }
+      if (testMove.x2 == 7 && testMove.y2 == 0){
+        return false;
+      }
+      if (testMove.x2 == 7 && testMove.y2 == 7){
+        return false;
+      }      
     }
     return true;
   }  
