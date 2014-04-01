@@ -147,6 +147,7 @@ public class Graph{
       DListNode walker = (DListNode)givenGraph.front();
       while(walker.isValidNode()){
         ((Chip)walker.item()).setVisited(false);
+        ((Chip)walker.item()).setPrev(null);
         walker = (DListNode)walker.next();
       }
       
@@ -154,20 +155,26 @@ public class Graph{
       stack.insertFront(start);
       while (!stack.isEmpty()){
         Chip v = (Chip)stack.pop();
+
         if (!v.getVisited()) {
           v.setVisited(true);
 
           // check if there is a win
           if(v.getX() == 7 && color == WHITE){
-            return true;
+            if(this.trackBack(v).length() >= 6){
+              return true;  
+            }
           }else if (v.getY() == 7 && color == BLACK) {
-            return true;
+            if(this.trackBack(v).length() >= 6){
+              return true;  
+            }
           }
 
           // for all edges from v to w in Graph put into stack
           walker = (DListNode)v.getEdges().front();
           while(walker.isValidNode()){
             stack.insertFront(walker.item());
+            ((Chip)walker.item()).setPrev(v);
             walker = (DListNode)walker.next();
           }
         }
@@ -176,5 +183,18 @@ public class Graph{
       System.out.println(e);
     }
     return false;
+  }
+
+  private DList trackBack (Chip start){
+    DList path = new DList();
+    if (start == null){
+      return path;
+    }
+    Chip walker = start;
+    while(walker.getPrev() != null){
+      path.insertFront(walker);
+      walker = walker.getPrev();
+    }
+    return path;
   }
 }

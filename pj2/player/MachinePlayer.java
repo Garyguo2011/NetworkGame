@@ -295,7 +295,7 @@ public class MachinePlayer extends Player {
     int neighborY;
     for (int i = testMove.x1 - 1; i <= testMove.x1 + 1; i++){
       for (int j = testMove.y1 - 1; j <= testMove.y1 + 1; j++){
-        if ((i >= 0) && (i <= 7) && (j >= 0) && (j <= 7) && (i != testMove.x1) && (j != testMove.y1)) {
+        if ((i >= 0) && (i <= 7) && (j >= 0) && (j <= 7) && ((i != testMove.x1) || (j != testMove.y1))) {
           if (testBoard.elementAt(i, j) == testColor){
             countNeighbors++;
             neighborList.insertBack(i*10+j);
@@ -315,7 +315,7 @@ public class MachinePlayer extends Player {
           neighborY = ((Integer) walker.item()) % 10;
           for (int i = neighborX - 1; i <= neighborX + 1; i++)
             for (int j = neighborY - 1; j <= neighborY + 1; j++)
-              if ((i >= 0) && (i <= 7) && (j >= 0) && (j <= 7) && (((i != testMove.x1) && (j != testMove.y1)) || ((i != neighborX) && (j != neighborY))))
+              if ((i >= 0) && (i <= 7) && (j >= 0) && (j <= 7) && (((i != testMove.x1) || (j != testMove.y1)) && ((i != neighborX) || (j != neighborY))))
                 if (testBoard.elementAt(i, j) == testColor)
                   return false;
           walker = (DListNode)walker.next();

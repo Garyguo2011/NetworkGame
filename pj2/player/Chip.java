@@ -22,7 +22,10 @@ public class Chip{
 	private int color;
 	private DList edges;
 	private Board board;
-	public boolean visited;
+  
+  private Chip prev;
+	private boolean visited;
+
 
   public final static int BLACK = 0;
   public final static int WHITE = 1;
@@ -33,6 +36,7 @@ public class Chip{
 		this.y = y;
 		this.color = color;
 		this.board = board;
+    this.prev = null;
 		this.visited = false;
 		this.edges = new DList();
 	}
@@ -40,6 +44,14 @@ public class Chip{
 	public void setVisited(boolean visited){
 		this.visited = visited;
 	}
+
+  public void setPrev(Chip parent){
+    this.prev = parent;
+  }
+
+  public Chip getPrev(){
+    return this.prev;
+  }
 
 	public boolean getVisited(){
 		return visited;
