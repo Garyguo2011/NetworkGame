@@ -144,8 +144,16 @@ public class Board {
     **/
   public int evaluate(int color){
     Graph graph = getGraph();
+    if(this.getNumOfChips(color) < 6){
+      if(color == WHITE){
+        return 2 * (graph.getWhiteNumOfEdges() - graph.getBlackNumOfEdges());
+      }else{
+        return 2 * (graph.getBlackNumOfEdges() - graph.getWhiteNumOfEdges());
+      }
+    }
+
     boolean colorIsWin = graph.isWin(color);
-    boolean colorIsLose = graph.isLose(color);
+    boolean colorIsLose = graph.isLose(color);  
 
     if(colorIsWin && colorIsLose){
       return LOSE;
