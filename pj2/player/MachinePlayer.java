@@ -421,8 +421,11 @@ public class MachinePlayer extends Player {
     testBoard.setElementAt(1, 5, WHITE);
     testBoard.setElementAt(4, 5, WHITE);
     testBoard.setElementAt(1, 6, BLACK);
-
     System.out.println(testBoard.toString());
+
+    
+
+
   }
 
 }
