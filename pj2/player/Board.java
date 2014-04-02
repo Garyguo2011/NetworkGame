@@ -223,6 +223,25 @@ public class Board {
     }
     return code;
   }
+
+  public String toString(){
+    String out = "";
+    out += "    0 1 2 3 4 5 6 7\n";
+    for (int y = 0; y < DIMENSION; y++) {
+      out += y + " | ";
+      for (int x = 0; x < DIMENSION; x ++) {
+        if (grid[y][x] == WHITE){
+          out += "W ";
+        }else if (grid[y][x] == BLACK) {
+          out += "B ";
+        }else{
+          out += ". ";
+        }
+      }
+      out += "|\n";
+    }
+    return out;
+  }
 }
 
 
