@@ -241,10 +241,39 @@ public class MachinePlayer extends Player {
 
   }
 
-  public static void main(String[] argv){
-    test1();
-  }
 
+
+
+
+  public static void test1 (){
+    Board testBoard = new Board();
+    testBoard.setElementAt(1, 1, BLACK);
+    testBoard.setElementAt(2, 1, BLACK);
+    testBoard.setElementAt(4, 1, BLACK);
+    testBoard.setElementAt(5, 1, BLACK);
+    testBoard.setElementAt(0, 2, WHITE);
+    testBoard.setElementAt(1, 2, WHITE);
+    testBoard.setElementAt(4, 2, WHITE);
+    testBoard.setElementAt(1, 5, WHITE);
+    testBoard.setElementAt(4, 5, WHITE);
+    testBoard.setElementAt(1, 6, BLACK);
+    // testBoard.setElementAt(7, 2, WHITE);
+    System.out.println(testBoard.toString());
+
+    int score = testBoard.evaluate(WHITE); 
+    if (score == WIN){
+      System.out.println("WIN");
+    }else if (score == LOSE) {
+      System.out.println("LOSE");
+    }else{
+      System.out.println(score);
+    }
+  }
+  public static void main(String[] args){
+    System.out.println("MachinePlayer Start Test here");
+    test1();
+    
+  }
 }
 
 

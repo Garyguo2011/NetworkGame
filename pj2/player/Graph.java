@@ -168,7 +168,7 @@ public class Graph{
         Chip child = (Chip)walker.item();
 
         if(!this.isStright(prev, start, child)){
-          if(depth > 4 && child.isEndGoal()){
+          if(depth >= 4 && child.isEndGoal()){
             return true;
           }else if (!child.isEndGoal() && !child.isStartGoal()) {
             if (child.getVisited() == false){
@@ -182,7 +182,7 @@ public class Graph{
         walker = (DListNode) walker.next();
       }
     }catch(InvalidNodeException e){
-      System.out.println(e + "**this part**");
+      System.out.println(e);
     }
     return false;
   }
@@ -204,6 +204,13 @@ public class Graph{
       return false;
     }    
   }
+
+  public String toString(){
+    String out = "";
+    out += "WHITE GRAPH\n==========================\n";
+    return out;
+  }
+
 
 /*
   private boolean depthFirstSearch(DList givenGraph, Chip start, int color){
