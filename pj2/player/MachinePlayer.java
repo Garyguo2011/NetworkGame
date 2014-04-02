@@ -220,6 +220,21 @@ public class MachinePlayer extends Player {
     return best;
   }
 
+  public static void main(String[] argv){
+    Board gameBoard = new Board();
+    gameBoard.setElementAt(1, 0, BLACK);
+    gameBoard.setElementAt(2, 1, WHITE);
+    gameBoard.setElementAt(0, 2, WHITE);
+    gameBoard.setElementAt(1, 2, BLACK);
+    gameBoard.setElementAt(6, 2, BLACK);
+    gameBoard.setElementAt(4, 3, WHITE);
+    gameBoard.setElementAt(1, 6, WHITE);
+    gameBoard.setElementAt(4, 6, WHITE);
+    gameBoard.setElementAt(6, 7, BLACK);
+    gameBoard.setElementAt();
+    MachinePlayer machine = new MachinePlayer()
+  }
+
 }
 
 
