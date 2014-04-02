@@ -31,13 +31,4 @@ public class Best{
   protected int getBestScore(){
     return this.bestScore;
   }
-
-  public String toString(){
-    if (bestMove == null){
-      return "[NULL] :" + bestScore;
-    }else{
-      return "[ " + bestMove.x1 + ", " + bestMove.y1 + "]: " + bestScore + "\n";
-    }
-    
-  }
 }

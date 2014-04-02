@@ -214,11 +214,10 @@ public class Board {
     // Replace the following line with your solution.
     int code = 0;
     int base = 1;
-    for (int j = 0; j < DIMENSION; j++) {
-      for (int i = 0; i < DIMENSION; i ++) {
-        // code += (grid[i][j] * base + 1) * 107 * i * 97 * i * i 
-        //       + j * 101 * j * (grid[i][j] * base + 1) * (grid[i][j] * base + 2);
-        code += grid[j][i] * base;
+    for (int i = 0; i < DIMENSION; i ++) {
+      for (int j = 0; j < DIMENSION; j++) {
+        code += (grid[i][j] * base + 1) * 107 * i * 97 * i * i 
+              + j * 101 * j * (grid[i][j] * base + 1) * (grid[i][j] * base + 2);
         base *= 3;
       }
     }
@@ -393,16 +392,12 @@ public class Board {
     for (int y = 0; y < DIMENSION; y++) {
       out += y + " | ";
       for (int x = 0; x < DIMENSION; x ++) {
-        if((x == 0 && y == 0) || (x == 0 && y == 7) || (x == 7 && y == 0) || (x == 7 && y == 7)){
-          out += "X ";
+        if (grid[y][x] == WHITE){
+          out += "W ";
+        }else if (grid[y][x] == BLACK) {
+          out += "B ";
         }else{
-          if (grid[y][x] == WHITE){
-            out += "W ";
-          }else if (grid[y][x] == BLACK) {
-            out += "B ";
-          }else{
-            out += ". ";
-          }          
+          out += ". ";
         }
       }
       out += "|\n";

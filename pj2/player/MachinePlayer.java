@@ -14,7 +14,6 @@ public class MachinePlayer extends Player {
 
   private Board board;
   private int searchDepth;
-  private int presentChips;
 
   private HashTableChained hashtable;
 
@@ -47,7 +46,6 @@ public class MachinePlayer extends Player {
     this.color = color;
     this.searchDepth = 1;
     this.board = new Board();
-    presentChips = 0;
   }
 
   public MachinePlayer(int color, Board givenBoard, int searchDepth){
@@ -76,7 +74,6 @@ public class MachinePlayer extends Player {
     this.color = color;
     this.searchDepth = searchDepth;
     this.board = new Board();
-    presentChips = 0;
   }
 
 
@@ -87,6 +84,86 @@ public class MachinePlayer extends Player {
     else{
       return WHITE;
     }
+  }
+
+  private Move blockWinningMove(){
+    DList legalMoveList = this.board.legalMoveList(getHumanColor());
+    Move blockMove;
+    Chip possibleChip;
+    Move possibleMove;
+    Move undoMove;
+    Move undoTryMove;
+    try{
+      DListNode walker = (DListNode)legalMoveList.front();
+      while (walker.isValidNode()){
+        Move tryMove = (Move)walker.item();
+        if (tryMove.moveKind == Board.ADD){
+          this.board.setBoard(tryMove, getHumanColor());
+          if (this.board.getGraph().isWin(getHumanColor())){
+            for (int i = tryMove.x1 - 1; i <= tryMove.x1 + 1; i++){
+              for (int j = tryMove.y1 - 1; j <= tryMove.y1 + 1; j++){
+                if ((i >= 0) && (i <= Board.DIMENSION - 1) && (j >= 0) && (j <= Board.DIMENSION - 1) && ((i != tryMove.x1) || (j != tryMove.y1))){
+                  possibleMove = new Move(i, j);
+                  if (this.board.isLegalMove(possibleMove, this.color)){
+                    this.board.setElementAt(i, j, this.color);
+                    if (this.board.getGraph().isWin(getHumanColor())){
+                      this.board.setElementAt(i, j, EMPTY);
+                      continue;
+                    }
+                    else{
+                      blockMove = new Move(i, j);
+                      this.board.setElementAt(i, j, EMPTY);
+                      this.board.setBoard(tryMove, EMPTY);
+                      return blockMove;
+                    }
+                  }
+                }
+              }
+            }
+          }
+          this.board.setBoard(tryMove, EMPTY);
+          walker = (DListNode)walker.next();
+        }
+        else{
+          undoTryMove = new Move(tryMove.x2, tryMove.y2, tryMove.x1, tryMove.y1);
+          this.board.setBoard(tryMove, getHumanColor());
+          DList originalChips = this.board.getChips(this.color);
+          DListNode iter = (DListNode) originalChips.front();
+          while (iter.isValidNode()){
+            possibleChip = (Chip) iter.item();
+            if (this.board.getGraph().isWin(getHumanColor())){
+              for (int i = tryMove.x1 - 1; i <= tryMove.x1 + 1; i++){
+                for (int j = tryMove.y1 - 1; j <= tryMove.y1 + 1; j++){
+                  if ((i >= 0) && (i <= Board.DIMENSION - 1) && (j >= 0) && (j <= Board.DIMENSION - 1) && ((i != tryMove.x1) || (j != tryMove.y1))){
+                    possibleMove = new Move(i, j, possibleChip.getX(), possibleChip.getY());
+                    if (this.board.isLegalMove(possibleMove, this.color)){
+                      this.board.setBoard(possibleMove, this.color);
+                      undoMove = new Move(possibleChip.getX(), possibleChip.getY(), i, j);
+                      if (this.board.getGraph().isWin(getHumanColor())){
+                        this.board.setBoard(undoMove, this.color);
+                        continue;
+                      }
+                      else{
+                        this.board.setBoard(undoTryMove, getHumanColor());
+                        this.board.setBoard(undoMove, this.color);
+                        return tryMove;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          this.board.setBoard(undoTryMove, EMPTY);
+          walker = (DListNode)walker.next();
+        }
+      }
+      return null;
+    }
+    catch(InvalidNodeException e){
+        System.out.println(e);
+    }
+    return null;
   }
 
 
@@ -109,10 +186,14 @@ public class MachinePlayer extends Player {
     }
 */
     this.hashtable = new HashTableChained();
+    // Move blockMove = blockWinningMove();
+    // if (blockMove != null){
+    //   this.board.setBoard(blockMove, this.color);
+    //   return blockMove;
+    // }
     Move bestMove = minimaxSearch(COMPUTER, 0, this.searchDepth, alpha, beta).getBestMove();
     this.board.setBoard(bestMove, this.color);
-    if (bestMove.moveKind == Board.ADD)
-      presentChips++;
+
     this.hashtable.makeEmpty();
 
     return bestMove;
@@ -126,8 +207,6 @@ public class MachinePlayer extends Player {
 
     if (this.board.isLegalMove(m, this.getHumanColor()) == true){
       this.board.setBoard(m, this.getHumanColor());
-      if (m.moveKind == Board.ADD)
-        presentChips++;
       return true;
     }
     return false;
@@ -141,8 +220,6 @@ public class MachinePlayer extends Player {
   public boolean forceMove(Move m) {
     if (this.board.isLegalMove(m, this.color) == true){
       this.board.setBoard(m, this.color);
-      if (m.moveKind == Board.ADD)
-        presentChips++;
       return true;
     }
     return false;
@@ -161,12 +238,6 @@ public class MachinePlayer extends Player {
     Best reply;
     int score;
 
-    String space = " ";
-    for (int i = 0; i < depth ; i ++ ) {
-    	space += "         ";
-    }
-
-
     // implement hashtable for search
     Entry boardPair = this.hashtable.find(this.board);
     if (boardPair == null){
@@ -181,22 +252,14 @@ public class MachinePlayer extends Player {
       best.setBestScore(score - depth);
       best.setBestMove(new Move());
 
-      System.out.println(space + "depth: " + depth + " oritinal: " + best.toString());	
-
       return best;
     }
     if(score == LOSE){
       best.setBestScore(score + depth);
       best.setBestMove(new Move());
-
-      System.out.println(space + "depth: " + depth + " oritinal: " + best.toString());	
-
       return best;
     }
     if (depth == maxDepth){
-
-    	System.out.println(space + "depth: " + depth + " oritinal: " + best.toString());	
-
       best.setBestScore(score);
       return best;
     }
@@ -209,18 +272,16 @@ public class MachinePlayer extends Player {
     }
 
     DList legalMoveList = this.board.legalMoveList(this.getSideColor(side));
-
     try{
       DListNode walker = (DListNode)legalMoveList.front();
-
       while (walker.isValidNode()){
         Move tryMove = (Move)walker.item();
-
+          
         // Change the board
         this.board.setBoard(tryMove, this.getSideColor(side));
         // Recursive call
         reply = minimaxSearch(!side, depth + 1, maxDepth, alpha, beta);
-
+        
         // Undo change
         if (tryMove.moveKind == Board.STEP){
           Move undoMove = new Move(tryMove.x2, tryMove.y2, tryMove.x1, tryMove.y1);
@@ -233,19 +294,12 @@ public class MachinePlayer extends Player {
         if (side == COMPUTER && reply.getBestScore() > best.getBestScore()){
           best.setBestMove((Move)walker.item());
           best.setBestScore(reply.getBestScore());
-          if(depth < 3){
-          	System.out.println(space + "depth: " + depth + " COMPUTER update: " + best.toString());	
-          }
-          
           alpha = reply.getBestScore();
         }
         // MINIMUM MODE
         else if (side == HUMAN && reply.getBestScore() < best.getBestScore()){
           best.setBestMove((Move)walker.item());
           best.setBestScore(reply.getBestScore());
-          if (depth < 3) {
-          	System.out.println(space + "depth: " + depth + " Human update: " + best.toString());	 
-          }
           beta = reply.getBestScore();
         }
         if (alpha >= beta){
@@ -264,9 +318,7 @@ public class MachinePlayer extends Player {
     System.out.println("MachinePlayer Start Test here");
     // test1();
     // test2();
-    // test3(); 
-    // autoTest6();   
-    autoTest6b();
+    test3();    
   }
 
   public static void test1 (){
@@ -344,68 +396,35 @@ public class MachinePlayer extends Player {
 
   private static void test3(){
     Board board = new Board();
-    board.setElementAt(1, 4, WHITE);
-    board.setElementAt(3, 2, WHITE);
-    Chip chip1 = new Chip(1, 4, WHITE, board);
-    Chip chip2 = new Chip(3, 2, WHITE, board);
-    if(chip1.isConnected(chip2)){
-      System.out.println("TRUE");
-    }
-    else{
-      System.out.println("FALSE");
-    }
-  }
-
-  private static void autoTest6a(){
-    Board board = new Board();
-    board.setElementAt(0, 3, WHITE);
-    board.setElementAt(2, 3, WHITE);
-    board.setElementAt(3, 3, BLACK);
-    board.setElementAt(6, 3, BLACK);
-    board.setElementAt(2, 4, WHITE);
-    board.setElementAt(3, 4, BLACK);
-    board.setElementAt(0, 5, WHITE);
-    board.setElementAt(5, 5, BLACK);
-    board.setElementAt(4, 6, WHITE);
-    board.setElementAt(5, 6, BLACK);
-
-    MachinePlayer player = new MachinePlayer(WHITE, board, 1);
-
-    System.out.println(board.toString());
-  }
-/*
-  private static void autoTest6b(){
-    Board board = new Board();
-    board.setElementAt(0, 2, WHITE);
-    board.setElementAt(1, 6, WHITE);
-    board.setElementAt(4, 3, WHITE);
-    board.setElementAt(4, 6, WHITE);
-    // board.setElementAt(7, 4, WHITE);
-    board.setElementAt(1, 0, BLACK);
-    board.setElementAt(1, 2, BLACK);
-    // board.setElementAt(3, 4, BLACK);
-    board.setElementAt(6, 2, BLACK);
-    board.setElementAt(6, 7, BLACK);
+    board.setElementAt(0, 1, WHITE);
+    board.setElementAt(0, 4, WHITE);
+    board.setElementAt(1, 5, WHITE);
+    board.setElementAt(4, 2, WHITE);
+    board.setElementAt(5, 1, WHITE);
+    board.setElementAt(2, 0, BLACK);
+    // board.setElementAt(2, 3, BLACK);
+    board.setElementAt(2, 7, BLACK);
+    board.setElementAt(3, 1, BLACK);
+    board.setElementAt(3, 5, BLACK);
+    board.setElementAt(5, 3, BLACK);
     System.out.println(board);
-    MachinePlayer machine = new MachinePlayer(WHITE, board, 1);
-    Move didMove = machine.chooseMove();
-    System.out.println("[ "+ didMove.x1 + ", " + didMove.y1 + " ] ");
+    // int score = board.evaluate(BLACK);
+    // if (score == WIN){
+    //   System.out.println("WIN");
+    // }
+    // else if (score == LOSE){
+    //   System.out.println("LOSE");
+    // }
+    // else{
+    //   System.out.println(score);
+    // }
+    MachinePlayer machine = new MachinePlayer(WHITE, board, 3);
+    machine.chooseMove();
     System.out.println(board);
   }
-*/
-
-  private static void autoTest6b(){
-    Board board = new Board();
-    board.setElementAt(1, 0, WHITE);
-    
-
-    System.out.println(board);
-    MachinePlayer machine = new MachinePlayer(WHITE, board, 1);
-    Move didMove = machine.chooseMove();
-    System.out.println("[ "+ didMove.x1 + ", " + didMove.y1 + " ] ");
-    System.out.println(board);
-  }
-
 
 
 }
+
+
+
