@@ -46,6 +46,12 @@ public class MachinePlayer extends Player {
     presentChips = 0;
   }
 
+  public MachinePlayer(int color, Board givenBoard, int searchDepth){
+    this.color = color;
+    this.board = givenBoard;
+    this.searchDepth = searchDepth;
+  }
+
   // Creates a machine player with the given color and search depth.  Color is
   // either 0 (black) or 1 (white).  (White has the first move.)
 
@@ -113,7 +119,8 @@ public class MachinePlayer extends Player {
   // illegal, returns false without modifying the internal state of "this"
   // player.  This method allows your opponents to inform you of their moves.
   public boolean opponentMove(Move m) {
-    if (isLegalMove(m, this.getHumanColor(), this.board) == true){
+
+    if (this.board.isLegalMove(m, this.getHumanColor()) == true){
       this.board.setBoard(m, this.getHumanColor());
       if (m.moveKind == Board.ADD)
         presentChips++;
@@ -128,7 +135,7 @@ public class MachinePlayer extends Player {
   // player.  This method is used to help set up "Network problems" for your
   // player to solve.
   public boolean forceMove(Move m) {
-    if (isLegalMove(m, this.color, this.board) == true){
+    if (this.board.isLegalMove(m, this.color) == true){
       this.board.setBoard(m, this.color);
       if (m.moveKind == Board.ADD)
         presentChips++;
@@ -176,7 +183,7 @@ public class MachinePlayer extends Player {
       best.setBestScore(beta);
     }
 
-    DList legalMoveList = this.legalMoveList(this.getSideColor(side), this.board);
+    DList legalMoveList = this.board.legalMoveList(this.getSideColor(side));
     try{
       DListNode walker = (DListNode)legalMoveList.front();
       while (walker.isValidNode()){
@@ -188,14 +195,11 @@ public class MachinePlayer extends Player {
         reply = minimaxSearch(!side, depth - 1, alpha, beta);
         
         // Undo change
-        if (tryMove.moveKind == Move.STEP){
+        if (tryMove.moveKind == Board.STEP){
           Move undoMove = new Move(tryMove.x2, tryMove.y2, tryMove.x1, tryMove.y1);
           this.board.setBoard(undoMove, this.getSideColor(side));
-        }else if(tryMove.moveKind == Move.ADD){
+        }else if(tryMove.moveKind == Board.ADD){
           this.board.setBoard(tryMove, EMPTY);
-        }else{
-          System.out.println("Error");
-          return null;
         }
 
         // MAXIMUM MODE
@@ -221,7 +225,6 @@ public class MachinePlayer extends Player {
     }
     return best;
   }
-
 
 //=========================================================================
 //============= (1) determining whether a move is valid ===================
@@ -421,13 +424,18 @@ public class MachinePlayer extends Player {
     testBoard.setElementAt(1, 5, WHITE);
     testBoard.setElementAt(4, 5, WHITE);
     testBoard.setElementAt(1, 6, BLACK);
+    // testBoard.setElementAt(7, 2, WHITE);
     System.out.println(testBoard.toString());
 
-    
-
-
+    int score = testBoard.evaluate(WHITE); 
+    if (score == WIN){
+      System.out.println("WIN");
+    }else if (score == LOSE) {
+      System.out.println("LOSE");
+    }else{
+      System.out.println(score);
+    }
   }
-
 }
 
 

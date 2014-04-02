@@ -224,6 +224,168 @@ public class Board {
     return code;
   }
 
+  /** 
+    * isLegalMove() determine whether a Move m is legal move or not.
+    * 
+    * @param m is a Move
+    * @return true if m is legal m otherwise false.
+    *
+    **/
+  public boolean isLegalMove(Move m, int color){
+    if (m.moveKind == STEP){
+      if (m.x1 == m.x2 && m.y1 == m.y2)
+        return false;
+      this.setElementAt(m.x2, m.y2, EMPTY);
+    }
+    if (this.legalTest1(m) == true && this.legalTest2(m, color) == true && this.legalTest3(m) == true && this.legalTest4(m, color) == true){
+      this.setElementAt(m.x2, m.y2, color);
+      return true;
+
+    }
+    this.setElementAt(m.x2, m.y2, color);
+    return false;
+  }
+
+  /** 
+    * legalTest1() 
+    * whether a move is placed in any of the four corner.
+    **/
+  private boolean legalTest1(Move testMove){
+    if (testMove.x1 == 0 && testMove.y1 == 0){
+      return false;
+    }
+    if (testMove.x1 == 0 && testMove.y1 == 7){
+      return false;
+    }
+    if (testMove.x1 == 7 && testMove.y1 == 0){
+      return false;
+    }
+    if (testMove.x1 == 7 && testMove.y1 == 7){
+      return false;
+    }
+    return true;
+  }  
+
+  /** 
+    * legalTest2() 
+    * whether a move is placed in a goal of the opposite color.
+    **/
+  private boolean legalTest2(Move testMove, int testColor){
+    if (testColor == WHITE){
+      if (testMove.y1 == 0 || testMove.y1 == 7){
+        return false;
+      }
+      return true;
+    }
+    if (testColor == BLACK){
+      if (testMove.x1 == 0 || testMove.x1 == 7){
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  /** 
+    * legalTest3() 
+    * whether a move is placed in a square that is alread occupied
+    **/
+  private boolean legalTest3(Move testMove){
+    if (this.elementAt(testMove.x1, testMove.y1) == EMPTY){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  /** 
+    * legalTest4()
+    * A player may not have more than two chips in a connect group,
+    * whether connected orthogonally or diagonally.
+    **/
+  private boolean legalTest4(Move testMove, int testColor){
+    int countNeighbors = 0;
+    DList neighborList = new DList();
+    int neighborX;
+    int neighborY;
+    for (int i = testMove.x1 - 1; i <= testMove.x1 + 1; i++){
+      for (int j = testMove.y1 - 1; j <= testMove.y1 + 1; j++){
+        if ((i >= 0) && (i <= DIMENSION - 1) && (j >= 0) && (j <= DIMENSION - 1) && ((i != testMove.x1) || (j != testMove.y1))) {
+          if (this.elementAt(i, j) == testColor){
+            countNeighbors++;
+            neighborList.insertBack(i*10+j);
+          }
+        }
+      }
+    }
+    if (countNeighbors >= 2){
+      return false;
+    }
+    else if (countNeighbors == 1){
+      try{
+        DListNode walker = (DListNode)neighborList.front();
+        while(walker.isValidNode()){
+          neighborX = ((Integer) walker.item()) / 10;
+          neighborY = ((Integer) walker.item()) % 10;
+          for (int i = neighborX - 1; i <= neighborX + 1; i++)
+            for (int j = neighborY - 1; j <= neighborY + 1; j++)
+              if ((i >= 0) && (i <= DIMENSION - 1) && (j >= 0) && (j <= DIMENSION - 1) && (((i != testMove.x1) || (j != testMove.y1)) && ((i != neighborX) || (j != neighborY))))
+                if (this.elementAt(i, j) == testColor)
+                  return false;
+          walker = (DListNode)walker.next();
+        }
+        return true;
+      }
+      catch(InvalidNodeException e){
+        System.out.println(e);
+      }
+    }
+    else{
+      return true;
+    }
+    return false;
+  }
+
+  //=========================================================================
+  //============= (2) generating a list of all valid moves ==================
+  //=========================================================================
+  protected DList legalMoveList(int color){
+    DList legalList = new DList();
+
+    DList chips = this.getChips(color);
+    if(chips.length() < 10){
+      for (int j = 0; j < DIMENSION; j++){
+        for (int i = 0; i < DIMENSION; i++){
+          Move testMove = new Move(i, j);
+          if (isLegalMove(testMove, color) == true){
+            legalList.insertBack(testMove);
+          }
+        }
+      }  
+    }else if(chips.length() == 10){
+      try{
+        DListNode walker = (DListNode)chips.front();
+        while(walker.isValidNode()){
+
+          for (int j = 0; j < DIMENSION; j++){
+            for (int i = 0; i < DIMENSION; i++){
+              Move testMove = new Move(i, j, ((Chip)walker.item()).getX(), ((Chip)walker.item()).getY());
+              if (isLegalMove(testMove, color) == true){
+                legalList.insertBack(testMove);
+              }
+            }
+          }              
+
+          walker = (DListNode)walker.next();
+        }
+      }catch(InvalidNodeException e){
+        System.out.println(e);
+      }    
+    }
+    return legalList;
+  }
+
   public String toString(){
     String out = "";
     out += "    0 1 2 3 4 5 6 7\n";
@@ -242,6 +404,7 @@ public class Board {
     }
     return out;
   }
+
 }
 
 
