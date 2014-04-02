@@ -314,7 +314,87 @@ public class MachinePlayer extends Player {
     return best;
   }
 
-  private static void test1(){
+  public static void main(String[] args){
+    System.out.println("MachinePlayer Start Test here");
+    // test1();
+    test2();
+    test3();    
+  }
+
+  public static void test1 (){
+    Board testBoard = new Board();
+    testBoard.setElementAt(1, 1, BLACK);
+    testBoard.setElementAt(2, 1, BLACK);
+    testBoard.setElementAt(4, 1, BLACK);
+    testBoard.setElementAt(5, 1, BLACK);
+    testBoard.setElementAt(0, 2, WHITE);
+    testBoard.setElementAt(1, 2, WHITE);
+    testBoard.setElementAt(4, 2, WHITE);
+    testBoard.setElementAt(1, 5, WHITE);
+    testBoard.setElementAt(4, 5, WHITE);
+    testBoard.setElementAt(1, 6, BLACK);
+
+
+    MachinePlayer player = new MachinePlayer(WHITE, testBoard, 1);
+    System.out.println(player.getBoard().toString());
+    printScore(testBoard.evaluate(player.getColor()));
+    Move move1 = player.chooseMove();
+    System.out.println("(" + move1.x1 + ", " + move1.y1 + ")");
+    System.out.println(player.getBoard().toString());
+    printScore(testBoard.evaluate(player.getColor()));
+  }
+
+  public static void printScore(int score){
+    if (score == WIN){
+      System.out.println("WIN");
+    }else if (score == LOSE) {
+      System.out.println("LOSE");
+    }else{
+      System.out.println(score);
+    } 
+  }
+
+  private static void test2(){
+    Board gameBoard = new Board();
+    gameBoard.setElementAt(0, 2, WHITE);
+    gameBoard.setElementAt(1, 4, WHITE);
+    gameBoard.setElementAt(2, 1, WHITE);
+    gameBoard.setElementAt(2, 2, WHITE);
+    gameBoard.setElementAt(2, 5, WHITE);
+    gameBoard.setElementAt(4, 1, WHITE);
+    gameBoard.setElementAt(5, 1, WHITE);
+    gameBoard.setElementAt(7, 1, WHITE);
+    gameBoard.setElementAt(7, 3, WHITE);
+    gameBoard.setElementAt(7, 5, WHITE);
+    gameBoard.setElementAt(1, 0, BLACK);
+    gameBoard.setElementAt(1, 1, BLACK);
+    gameBoard.setElementAt(2, 7, BLACK);
+    gameBoard.setElementAt(1, 3, BLACK);
+    
+    gameBoard.setElementAt(3, 3, BLACK);
+    gameBoard.setElementAt(4, 0, BLACK);
+    gameBoard.setElementAt(4, 7, BLACK);
+    gameBoard.setElementAt(5, 2, BLACK);
+    gameBoard.setElementAt(5, 6, BLACK);
+    
+    gameBoard.setElementAt(6, 2, BLACK);
+    
+    // gameBoard.setElementAt(2, 1, WHITE);
+    System.out.println(gameBoard);
+    Graph gameGraph = gameBoard.getGraph();
+    System.out.println(gameGraph.toString());
+
+    int score = gameBoard.evaluate(WHITE); 
+    if (score == WIN){
+      System.out.println("WIN");
+    }else if (score == LOSE) {
+      System.out.println("LOSE");
+    }else{
+      System.out.println(score);
+    }
+  }
+
+  private static void test3(){
     Board board = new Board();
     board.setElementAt(0, 1, WHITE);
     board.setElementAt(0, 4, WHITE);
@@ -343,9 +423,6 @@ public class MachinePlayer extends Player {
     System.out.println(board);
   }
 
-  public static void main(String[] argv){
-    test1();
-  }
 
 }
 
