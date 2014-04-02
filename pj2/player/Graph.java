@@ -109,7 +109,7 @@ public class Graph{
 		*
 		*
   	**/
-  private boolean dfsWhite(){
+  public boolean dfsWhite(){
     try{
       DListNode walker = (DListNode)this.whiteGraph.front();
       while(walker.isValidNode()){
@@ -126,7 +126,7 @@ public class Graph{
     return false;
   }
 
-  private boolean dfsBlack(){
+  public boolean dfsBlack(){
     try{
       DListNode walker = (DListNode)this.blackGraph.front();
       while(walker.isValidNode()){

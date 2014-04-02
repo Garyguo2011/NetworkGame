@@ -161,6 +161,12 @@ public class MachinePlayer extends Player {
     Best reply;
     int score;
 
+    String space = " ";
+    for (int i = 0; i < depth ; i ++ ) {
+    	space += "         ";
+    }
+
+
     // implement hashtable for search
     Entry boardPair = this.hashtable.find(this.board);
     if (boardPair == null){
@@ -174,14 +180,23 @@ public class MachinePlayer extends Player {
     if(score == WIN){
       best.setBestScore(score - depth);
       best.setBestMove(new Move());
+
+      System.out.println(space + "depth: " + depth + " oritinal: " + best.toString());	
+
       return best;
     }
     if(score == LOSE){
       best.setBestScore(score + depth);
       best.setBestMove(new Move());
+
+      System.out.println(space + "depth: " + depth + " oritinal: " + best.toString());	
+
       return best;
     }
     if (depth == maxDepth){
+
+    	System.out.println(space + "depth: " + depth + " oritinal: " + best.toString());	
+
       best.setBestScore(score);
       return best;
     }
@@ -194,8 +209,10 @@ public class MachinePlayer extends Player {
     }
 
     DList legalMoveList = this.board.legalMoveList(this.getSideColor(side));
+
     try{
       DListNode walker = (DListNode)legalMoveList.front();
+
       while (walker.isValidNode()){
         Move tryMove = (Move)walker.item();
 
@@ -203,7 +220,7 @@ public class MachinePlayer extends Player {
         this.board.setBoard(tryMove, this.getSideColor(side));
         // Recursive call
         reply = minimaxSearch(!side, depth + 1, maxDepth, alpha, beta);
-        
+
         // Undo change
         if (tryMove.moveKind == Board.STEP){
           Move undoMove = new Move(tryMove.x2, tryMove.y2, tryMove.x1, tryMove.y1);
@@ -216,12 +233,19 @@ public class MachinePlayer extends Player {
         if (side == COMPUTER && reply.getBestScore() > best.getBestScore()){
           best.setBestMove((Move)walker.item());
           best.setBestScore(reply.getBestScore());
+          if(depth < 3){
+          	System.out.println(space + "depth: " + depth + " COMPUTER update: " + best.toString());	
+          }
+          
           alpha = reply.getBestScore();
         }
         // MINIMUM MODE
         else if (side == HUMAN && reply.getBestScore() < best.getBestScore()){
           best.setBestMove((Move)walker.item());
           best.setBestScore(reply.getBestScore());
+          if (depth < 3) {
+          	System.out.println(space + "depth: " + depth + " Human update: " + best.toString());	 
+          }
           beta = reply.getBestScore();
         }
         if (alpha >= beta){
@@ -239,8 +263,10 @@ public class MachinePlayer extends Player {
   public static void main(String[] args){
     System.out.println("MachinePlayer Start Test here");
     // test1();
-    test2();
-    test3();    
+    // test2();
+    // test3(); 
+    // autoTest6();   
+    autoTest6b();
   }
 
   public static void test1 (){
@@ -330,11 +356,55 @@ public class MachinePlayer extends Player {
     }
   }
 
-  private static void test4(){
+  private static void autoTest6a(){
     Board board = new Board();
-    return;
-  }
+    board.setElementAt(0, 3, WHITE);
+    board.setElementAt(2, 3, WHITE);
+    board.setElementAt(3, 3, BLACK);
+    board.setElementAt(6, 3, BLACK);
+    board.setElementAt(2, 4, WHITE);
+    board.setElementAt(3, 4, BLACK);
+    board.setElementAt(0, 5, WHITE);
+    board.setElementAt(5, 5, BLACK);
+    board.setElementAt(4, 6, WHITE);
+    board.setElementAt(5, 6, BLACK);
 
+    MachinePlayer player = new MachinePlayer(WHITE, board, 1);
+
+    System.out.println(board.toString());
+  }
+/*
+  private static void autoTest6b(){
+    Board board = new Board();
+    board.setElementAt(0, 2, WHITE);
+    board.setElementAt(1, 6, WHITE);
+    board.setElementAt(4, 3, WHITE);
+    board.setElementAt(4, 6, WHITE);
+    // board.setElementAt(7, 4, WHITE);
+    board.setElementAt(1, 0, BLACK);
+    board.setElementAt(1, 2, BLACK);
+    // board.setElementAt(3, 4, BLACK);
+    board.setElementAt(6, 2, BLACK);
+    board.setElementAt(6, 7, BLACK);
+    System.out.println(board);
+    MachinePlayer machine = new MachinePlayer(WHITE, board, 1);
+    Move didMove = machine.chooseMove();
+    System.out.println("[ "+ didMove.x1 + ", " + didMove.y1 + " ] ");
+    System.out.println(board);
+  }
+*/
+
+  private static void autoTest6b(){
+    Board board = new Board();
+    board.setElementAt(1, 0, WHITE);
+    
+
+    System.out.println(board);
+    MachinePlayer machine = new MachinePlayer(WHITE, board, 1);
+    Move didMove = machine.chooseMove();
+    System.out.println("[ "+ didMove.x1 + ", " + didMove.y1 + " ] ");
+    System.out.println(board);
+  }
 
 
 
