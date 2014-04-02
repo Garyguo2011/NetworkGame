@@ -226,7 +226,7 @@ public class MachinePlayer extends Player {
     return best;
   }
 
-  public static void main(String[] argv){
+  private static void test1(){
     Board gameBoard = new Board();
     gameBoard.setElementAt(1, 0, BLACK);
     gameBoard.setElementAt(0, 2, WHITE);
@@ -236,9 +236,13 @@ public class MachinePlayer extends Player {
     gameBoard.setElementAt(1, 6, WHITE);
     gameBoard.setElementAt(4, 6, WHITE);
     gameBoard.setElementAt(6, 7, BLACK);
-    MachinePlayer machine = new MachinePlayer(WHITE, gameBoard, 1);
-    machine.chooseMove();
+    // gameBoard.setElementAt(2, 1, WHITE);
     System.out.println(gameBoard);
+
+  }
+
+  public static void main(String[] argv){
+    test1();
   }
 
 }
