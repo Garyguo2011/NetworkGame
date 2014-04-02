@@ -150,17 +150,19 @@ public class Chip{
 		       this.board.equals(other.getBoard());
 	}
 
+
+
   /**
-		* isConnected() determine whether or not two given Chips is connected or not.
-		* DO NOT INCLUDE ITSELF
-		* 
-		* @param other another chip
-		*
-		* @return true is two Chip is connect, otherwise false
-  	**/
+    * isConnected() determine whether or not two given Chips is connected or not.
+    * DO NOT INCLUDE ITSELF
+    * 
+    * @param other another chip
+    *
+    * @return true is two Chip is connect, otherwise false
+    **/
   protected boolean isConnected(Chip other){
     //see if the input other chip is in the same board as this chip, and same color
-  	if(this.board.equals(other.getBoard()) && this.color == other.getColor()){
+    if(this.board.equals(other.getBoard()) && this.color == other.getColor()){
       //if both chips are in the same goal area, they cannot be connected.
       if ((this.getX() == 0 && other.getX() == 0) || (this.getX() == 7 && other.getX() == 7)){
         return false;
@@ -228,14 +230,54 @@ public class Chip{
           return true;
         }
       }
+      else if ((this.getX() - other.getX()) == (other.getY() - this.getY())){
+        if (this.getX() < other.getX()){
+          int y = this.getY() - 1;
+          for (int i = this.getX() + 1; i < other.getX(); i++){
+            if (board.elementAt(i, y) != EMPTY){
+              return false;
+            }
+            y--;
+          }
+          return true;
+        }
+        else{
+          int y = other.getY() - 1;
+          for (int i = other.getX() + 1; i < this.getX(); i++){
+            if (board.elementAt(i, y) != EMPTY){
+              return false;
+            }
+            y--;
+          }
+          return true;
+        }
+      }
       //if not satify the above conditions, the chips are not connected.
       else{
         return false;
       }
-  	}
+    }
     return false;
   }
 
+  public String toString(){
+    String out = "";
+    out += this.infoString() + ": ";
+    try{
+      DListNode walker = (DListNode)this.edges.front();
+      while(walker.isValidNode()){
+        out += ((Chip)walker.item()).infoString() + " - ";
+        walker = (DListNode)walker.next();
+      }
+    }catch(InvalidNodeException e){
+      System.out.println(e);
+    }
+    return out;
+  }
+
+  public String infoString(){
+    return " [ " + x + y + ": " + color + " ] ";
+  }
 
 
 /*

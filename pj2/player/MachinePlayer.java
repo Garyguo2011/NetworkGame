@@ -35,13 +35,17 @@ public class MachinePlayer extends Player {
     return this.color;
   }
 
+  public Board getBoard(){
+    return this.board;
+  }
+
 
 
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
   public MachinePlayer(int color) {
     this.color = color;
-    this.searchDepth = 3;
+    this.searchDepth = 1;
     this.board = new Board();
     presentChips = 0;
   }
@@ -57,7 +61,7 @@ public class MachinePlayer extends Player {
 
   /** 
     * searchDepth ONE => 
-    * Your machinePlayter considers all teh moves and chooses
+    * Your machinePlayer considers all teh moves and chooses
     * the one that yields the "best" board.
     *
     * SearchDepth TWO => 
@@ -105,7 +109,7 @@ public class MachinePlayer extends Player {
     }
 */
     this.hashtable = new HashTableChained();
-    Move bestMove = minimaxSearch(COMPUTER, this.searchDepth, alpha, beta).getBestMove();
+    Move bestMove = minimaxSearch(COMPUTER, 0, this.searchDepth, alpha, beta).getBestMove();
     this.board.setBoard(bestMove, this.color);
     if (bestMove.moveKind == Board.ADD)
       presentChips++;
@@ -152,7 +156,7 @@ public class MachinePlayer extends Player {
     }
   }
 
-  private Best minimaxSearch(boolean side, int depth, int alpha, int beta){
+  private Best minimaxSearch(boolean side, int depth, int maxDepth, int alpha, int beta){
     Best best = new Best();
     Best reply;
     int score;
@@ -167,12 +171,18 @@ public class MachinePlayer extends Player {
     }
 
     // Base Case
-    if (depth == 0 || score == WIN || score == LOSE){
-      if(score == WIN){
-        score -= 10000 * (this.searchDepth - depth);
-      }
-      best.setBestScore(score);
+    if(score == WIN){
+      best.setBestScore(score - depth);
       best.setBestMove(new Move());
+      return best;
+    }
+    if(score == LOSE){
+      best.setBestScore(score + depth);
+      best.setBestMove(new Move());
+      return best;
+    }
+    if (depth == maxDepth){
+      best.setBestScore(score);
       return best;
     }
 
@@ -192,7 +202,7 @@ public class MachinePlayer extends Player {
         // Change the board
         this.board.setBoard(tryMove, this.getSideColor(side));
         // Recursive call
-        reply = minimaxSearch(!side, depth - 1, alpha, beta);
+        reply = minimaxSearch(!side, depth + 1, maxDepth, alpha, beta);
         
         // Undo change
         if (tryMove.moveKind == Board.STEP){
@@ -226,24 +236,193 @@ public class MachinePlayer extends Player {
     return best;
   }
 
-  private static void test1(){
-    Board gameBoard = new Board();
-    gameBoard.setElementAt(1, 0, BLACK);
-    gameBoard.setElementAt(0, 2, WHITE);
-    gameBoard.setElementAt(1, 2, BLACK);
-    gameBoard.setElementAt(6, 2, BLACK);
-    gameBoard.setElementAt(4, 3, WHITE);
-    gameBoard.setElementAt(1, 6, WHITE);
-    gameBoard.setElementAt(4, 6, WHITE);
-    gameBoard.setElementAt(6, 7, BLACK);
-    // gameBoard.setElementAt(2, 1, WHITE);
-    System.out.println(gameBoard);
+//=========================================================================
+//============= (1) determining whether a move is valid ===================
+//=========================================================================  
+  /** 
+    * isLegalMove() determine whether a Move m is legal move or not.
+    * 
+    * @param m is a Move
+    * @return true if m is legal m otherwise false.
+    *
+    **/
+  public boolean isLegalMove(Move m, int color, Board testBoard){
+    if (m.moveKind == Board.STEP){
+      if (m.x1 == m.x2 && m.y1 == m.y2)
+        return false;
+      testBoard.setElementAt(m.x2, m.y2, EMPTY);
+    }
+    if (this.legalTest1(m) == true && this.legalTest2(m, color) == true && this.legalTest3(m, testBoard) == true && this.legalTest4(m, testBoard, color) == true){
+      board.setElementAt(m.x2, m.y2, color);
+      return true;
 
+    }
+    board.setElementAt(m.x2, m.y2, color);
+    return false;
+  }
+
+  /** 
+    * legalTest1() 
+    * whether a move is placed in any of the four corner.
+    **/
+  private boolean legalTest1(Move testMove){
+    if (testMove.x1 == 0 && testMove.y1 == 0){
+      return false;
+    }
+    if (testMove.x1 == 0 && testMove.y1 == 7){
+      return false;
+    }
+    if (testMove.x1 == 7 && testMove.y1 == 0){
+      return false;
+    }
+    if (testMove.x1 == 7 && testMove.y1 == 7){
+      return false;
+    }
+
+    if (testMove.moveKind == Move.STEP){
+      if (testMove.x2 == 0 && testMove.y2 == 0){
+        return false;
+      }
+      if (testMove.x2 == 0 && testMove.y2 == 7){
+        return false;
+      }
+      if (testMove.x2 == 7 && testMove.y2 == 0){
+        return false;
+      }
+      if (testMove.x2 == 7 && testMove.y2 == 7){
+        return false;
+      }      
+    }
+    return true;
+  }  
+
+  /** 
+    * legalTest2() 
+    * whether a move is placed in a goal of the opposite color.
+    **/
+  private boolean legalTest2(Move testMove, int testColor){
+    if (testColor == WHITE){
+      if (testMove.y1 == 0 || testMove.y1 == 7){
+        return false;
+      }
+      return true;
+    }
+    if (testColor == BLACK){
+      if (testMove.x1 == 0 || testMove.x1 == 7){
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  /** 
+    * legalTest3() 
+    * whether a move is placed in a square that is alread occupied
+    **/
+  private boolean legalTest3(Move testMove, Board testBoard){
+    if (testBoard.elementAt(testMove.x1, testMove.y1) == EMPTY){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  /** 
+    * legalTest4()
+    * A player may not have more than two chips in a connect group,
+    * whether connected orthogonally or diagonally.
+    **/
+  private boolean legalTest4(Move testMove, Board testBoard, int testColor){
+    int countNeighbors = 0;
+    DList neighborList = new DList();
+    int neighborX;
+    int neighborY;
+    for (int i = testMove.x1 - 1; i <= testMove.x1 + 1; i++){
+      for (int j = testMove.y1 - 1; j <= testMove.y1 + 1; j++){
+        if ((i >= 0) && (i <= Board.DIMENSION - 1) && (j >= 0) && (j <= Board.DIMENSION - 1) && ((i != testMove.x1) || (j != testMove.y1))) {
+          if (testBoard.elementAt(i, j) == testColor){
+            countNeighbors++;
+            neighborList.insertBack(i*10+j);
+          }
+        }
+      }
+    }
+    if (countNeighbors >= 2){
+      return false;
+    }
+    else if (countNeighbors == 1){
+      try{
+        DListNode walker = (DListNode)neighborList.front();
+        while(walker.isValidNode()){
+          neighborX = ((Integer) walker.item()) / 10;
+          neighborY = ((Integer) walker.item()) % 10;
+          for (int i = neighborX - 1; i <= neighborX + 1; i++)
+            for (int j = neighborY - 1; j <= neighborY + 1; j++)
+              if ((i >= 0) && (i <= Board.DIMENSION - 1) && (j >= 0) && (j <= Board.DIMENSION - 1) && (((i != testMove.x1) || (j != testMove.y1)) && ((i != neighborX) || (j != neighborY))))
+                if (testBoard.elementAt(i, j) == testColor)
+                  return false;
+          walker = (DListNode)walker.next();
+        }
+        return true;
+      }
+      catch(InvalidNodeException e){
+        System.out.println(e);
+      }
+    }
+    else{
+      return true;
+    }
+    return false;
+  }
+
+  //=========================================================================
+  //============= (2) generating a list of all valid moves ==================
+  //=========================================================================
+  private DList legalMoveList(int color, Board testBoard){
+    DList legalList = new DList();
+    if(presentChips < 20){
+      for (int j = 0; j < Board.DIMENSION; j++){
+        for (int i = 0; i < Board.DIMENSION; i++){
+          Move testMove = new Move(i, j);
+          if (isLegalMove(testMove, color, testBoard) == true){
+            legalList.insertBack(testMove);
+          }
+        }
+      }  
+    }else if(presentChips == 20){
+      DList chips = board.getChips(color);
+      try{
+        DListNode walker = (DListNode)chips.front();
+        while(walker.isValidNode()){
+
+          for (int j = 0; j < Board.DIMENSION; j++){
+            for (int i = 0; i < Board.DIMENSION; i++){
+              Move testMove = new Move(i, j, ((Chip)walker.item()).getX(), ((Chip)walker.item()).getY());
+              if (isLegalMove(testMove, color, testBoard) == true){
+                legalList.insertBack(testMove);
+              }
+            }
+          }              
+
+          walker = (DListNode)walker.next();
+        }
+      }catch(InvalidNodeException e){
+        System.out.println(e);
+      }    
+    }
+    return legalList;
   }
 
 
-
-
+  public static void main(String[] args){
+    System.out.println("MachinePlayer Start Test here");
+    // test1();
+    test2();
+    test3();
+    
+  }
 
   public static void test1 (){
     Board testBoard = new Board();
@@ -257,10 +436,58 @@ public class MachinePlayer extends Player {
     testBoard.setElementAt(1, 5, WHITE);
     testBoard.setElementAt(4, 5, WHITE);
     testBoard.setElementAt(1, 6, BLACK);
-    // testBoard.setElementAt(7, 2, WHITE);
-    System.out.println(testBoard.toString());
 
-    int score = testBoard.evaluate(WHITE); 
+
+    MachinePlayer player = new MachinePlayer(WHITE, testBoard, 1);
+    System.out.println(player.getBoard().toString());
+    printScore(testBoard.evaluate(player.getColor()));
+    Move move1 = player.chooseMove();
+    System.out.println("(" + move1.x1 + ", " + move1.y1 + ")");
+    System.out.println(player.getBoard().toString());
+    printScore(testBoard.evaluate(player.getColor()));
+  }
+
+  public static void printScore(int score){
+    if (score == WIN){
+      System.out.println("WIN");
+    }else if (score == LOSE) {
+      System.out.println("LOSE");
+    }else{
+      System.out.println(score);
+    } 
+  }
+
+  private static void test2(){
+    Board gameBoard = new Board();
+    gameBoard.setElementAt(0, 2, WHITE);
+    gameBoard.setElementAt(1, 4, WHITE);
+    gameBoard.setElementAt(2, 1, WHITE);
+    gameBoard.setElementAt(2, 2, WHITE);
+    gameBoard.setElementAt(2, 5, WHITE);
+    gameBoard.setElementAt(4, 1, WHITE);
+    gameBoard.setElementAt(5, 1, WHITE);
+    gameBoard.setElementAt(7, 1, WHITE);
+    gameBoard.setElementAt(7, 3, WHITE);
+    gameBoard.setElementAt(7, 5, WHITE);
+    gameBoard.setElementAt(1, 0, BLACK);
+    gameBoard.setElementAt(1, 1, BLACK);
+    gameBoard.setElementAt(2, 7, BLACK);
+    gameBoard.setElementAt(1, 3, BLACK);
+    
+    gameBoard.setElementAt(3, 3, BLACK);
+    gameBoard.setElementAt(4, 0, BLACK);
+    gameBoard.setElementAt(4, 7, BLACK);
+    gameBoard.setElementAt(5, 2, BLACK);
+    gameBoard.setElementAt(5, 6, BLACK);
+    
+    gameBoard.setElementAt(6, 2, BLACK);
+    
+    // gameBoard.setElementAt(2, 1, WHITE);
+    System.out.println(gameBoard);
+    Graph gameGraph = gameBoard.getGraph();
+    System.out.println(gameGraph.toString());
+
+    int score = gameBoard.evaluate(WHITE); 
     if (score == WIN){
       System.out.println("WIN");
     }else if (score == LOSE) {
@@ -269,14 +496,27 @@ public class MachinePlayer extends Player {
       System.out.println(score);
     }
   }
-  public static void main(String[] args){
-    System.out.println("MachinePlayer Start Test here");
-    test1();
-    
+
+  private static void test3(){
+    Board board = new Board();
+    board.setElementAt(1, 4, WHITE);
+    board.setElementAt(3, 2, WHITE);
+    Chip chip1 = new Chip(1, 4, WHITE, board);
+    Chip chip2 = new Chip(3, 2, WHITE, board);
+    if(chip1.isConnected(chip2)){
+      System.out.println("TRUE");
+    }
+    else{
+      System.out.println("FALSE");
+    }
   }
+
+  private static void test4(){
+    Board board = new Board();
+    return;
+  }
+
+
+
+
 }
-
-
-
-
-
