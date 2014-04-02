@@ -236,27 +236,11 @@ public class MachinePlayer extends Player {
     return best;
   }
 
-  private static void test1(){
-    Board gameBoard = new Board();
-    gameBoard.setElementAt(1, 0, BLACK);
-    gameBoard.setElementAt(0, 2, WHITE);
-    gameBoard.setElementAt(1, 2, BLACK);
-    gameBoard.setElementAt(6, 2, BLACK);
-    gameBoard.setElementAt(4, 3, WHITE);
-    gameBoard.setElementAt(1, 6, WHITE);
-    gameBoard.setElementAt(4, 6, WHITE);
-    gameBoard.setElementAt(6, 7, BLACK);
-    // gameBoard.setElementAt(2, 1, WHITE);
-    System.out.println(gameBoard);
-
-  }
-
   public static void main(String[] args){
     System.out.println("MachinePlayer Start Test here");
     // test1();
     test2();
-    test3();
-    
+    test3();    
   }
 
   public static void test1 (){
