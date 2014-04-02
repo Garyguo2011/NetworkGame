@@ -35,13 +35,17 @@ public class MachinePlayer extends Player {
     return this.color;
   }
 
+  public Board getBoard(){
+    return this.board;
+  }
+
 
 
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
   public MachinePlayer(int color) {
     this.color = color;
-    this.searchDepth = 3;
+    this.searchDepth = 1;
     this.board = new Board();
     presentChips = 0;
   }
@@ -57,7 +61,7 @@ public class MachinePlayer extends Player {
 
   /** 
     * searchDepth ONE => 
-    * Your machinePlayter considers all teh moves and chooses
+    * Your machinePlayer considers all teh moves and chooses
     * the one that yields the "best" board.
     *
     * SearchDepth TWO => 
@@ -105,7 +109,7 @@ public class MachinePlayer extends Player {
     }
 */
     this.hashtable = new HashTableChained();
-    Move bestMove = minimaxSearch(COMPUTER, this.searchDepth, alpha, beta).getBestMove();
+    Move bestMove = minimaxSearch(COMPUTER, 0, this.searchDepth, alpha, beta).getBestMove();
     this.board.setBoard(bestMove, this.color);
     if (bestMove.moveKind == Board.ADD)
       presentChips++;
@@ -152,7 +156,7 @@ public class MachinePlayer extends Player {
     }
   }
 
-  private Best minimaxSearch(boolean side, int depth, int alpha, int beta){
+  private Best minimaxSearch(boolean side, int depth, int maxDepth, int alpha, int beta){
     Best best = new Best();
     Best reply;
     int score;
@@ -167,12 +171,18 @@ public class MachinePlayer extends Player {
     }
 
     // Base Case
-    if (depth == 0 || score == WIN || score == LOSE){
-      if(score == WIN){
-        score -= 10000 * (this.searchDepth - depth);
-      }
-      best.setBestScore(score);
+    if(score == WIN){
+      best.setBestScore(score - depth);
       best.setBestMove(new Move());
+      return best;
+    }
+    if(score == LOSE){
+      best.setBestScore(score + depth);
+      best.setBestMove(new Move());
+      return best;
+    }
+    if (depth == maxDepth){
+      best.setBestScore(score);
       return best;
     }
 
@@ -192,7 +202,7 @@ public class MachinePlayer extends Player {
         // Change the board
         this.board.setBoard(tryMove, this.getSideColor(side));
         // Recursive call
-        reply = minimaxSearch(!side, depth - 1, alpha, beta);
+        reply = minimaxSearch(!side, depth + 1, maxDepth, alpha, beta);
         
         // Undo change
         if (tryMove.moveKind == Board.STEP){
@@ -408,7 +418,9 @@ public class MachinePlayer extends Player {
 
   public static void main(String[] args){
     System.out.println("MachinePlayer Start Test here");
-    test1();
+    // test1();
+    test2();
+    test3();
     
   }
 
@@ -424,10 +436,58 @@ public class MachinePlayer extends Player {
     testBoard.setElementAt(1, 5, WHITE);
     testBoard.setElementAt(4, 5, WHITE);
     testBoard.setElementAt(1, 6, BLACK);
-    // testBoard.setElementAt(7, 2, WHITE);
-    System.out.println(testBoard.toString());
 
-    int score = testBoard.evaluate(WHITE); 
+
+    MachinePlayer player = new MachinePlayer(WHITE, testBoard, 1);
+    System.out.println(player.getBoard().toString());
+    printScore(testBoard.evaluate(player.getColor()));
+    Move move1 = player.chooseMove();
+    System.out.println("(" + move1.x1 + ", " + move1.y1 + ")");
+    System.out.println(player.getBoard().toString());
+    printScore(testBoard.evaluate(player.getColor()));
+  }
+
+  public static void printScore(int score){
+    if (score == WIN){
+      System.out.println("WIN");
+    }else if (score == LOSE) {
+      System.out.println("LOSE");
+    }else{
+      System.out.println(score);
+    } 
+  }
+
+  private static void test2(){
+    Board gameBoard = new Board();
+    gameBoard.setElementAt(0, 2, WHITE);
+    gameBoard.setElementAt(1, 4, WHITE);
+    gameBoard.setElementAt(2, 1, WHITE);
+    gameBoard.setElementAt(2, 2, WHITE);
+    gameBoard.setElementAt(2, 5, WHITE);
+    gameBoard.setElementAt(4, 1, WHITE);
+    gameBoard.setElementAt(5, 1, WHITE);
+    gameBoard.setElementAt(7, 1, WHITE);
+    gameBoard.setElementAt(7, 3, WHITE);
+    gameBoard.setElementAt(7, 5, WHITE);
+    gameBoard.setElementAt(1, 0, BLACK);
+    gameBoard.setElementAt(1, 1, BLACK);
+    gameBoard.setElementAt(2, 7, BLACK);
+    gameBoard.setElementAt(1, 3, BLACK);
+    
+    gameBoard.setElementAt(3, 3, BLACK);
+    gameBoard.setElementAt(4, 0, BLACK);
+    gameBoard.setElementAt(4, 7, BLACK);
+    gameBoard.setElementAt(5, 2, BLACK);
+    gameBoard.setElementAt(5, 6, BLACK);
+    
+    gameBoard.setElementAt(6, 2, BLACK);
+    
+    // gameBoard.setElementAt(2, 1, WHITE);
+    System.out.println(gameBoard);
+    Graph gameGraph = gameBoard.getGraph();
+    System.out.println(gameGraph.toString());
+
+    int score = gameBoard.evaluate(WHITE); 
     if (score == WIN){
       System.out.println("WIN");
     }else if (score == LOSE) {
@@ -436,9 +496,27 @@ public class MachinePlayer extends Player {
       System.out.println(score);
     }
   }
+
+  private static void test3(){
+    Board board = new Board();
+    board.setElementAt(1, 4, WHITE);
+    board.setElementAt(3, 2, WHITE);
+    Chip chip1 = new Chip(1, 4, WHITE, board);
+    Chip chip2 = new Chip(3, 2, WHITE, board);
+    if(chip1.isConnected(chip2)){
+      System.out.println("TRUE");
+    }
+    else{
+      System.out.println("FALSE");
+    }
+  }
+
+  private static void test4(){
+    Board board = new Board();
+    return;
+  }
+
+
+
+
 }
-
-
-
-
-

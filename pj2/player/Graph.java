@@ -49,11 +49,13 @@ public class Graph{
     try{
       DListNode walker1 = (DListNode)graph.front();
       while(walker1.isValidNode() && walker1.next().isValidNode()){
+      
         walker2 = (DListNode)walker1.next();
         while(walker2.isValidNode()){
           if (((Chip)walker1.item()).isConnected((Chip)walker2.item())){
             ((Chip)walker1.item()).addEdge((Chip)walker2.item());
             ((Chip)walker2.item()).addEdge((Chip)walker1.item());
+
             totalEdeges++;
           }
           walker2 = (DListNode)walker2.next();
@@ -155,12 +157,11 @@ public class Graph{
     return depthFirstSearch(null, start, 0);
   }
 
-  private boolean depthFirstSearch (Chip prev, Chip start, int depth){
+  public boolean depthFirstSearch (Chip prev, Chip start, int depth){
     if (depth >= 9){
       return false;
     }
     boolean isfind = false;
-    
     start.setVisited(true);
     try{
       DListNode walker = (DListNode)start.getEdges().front();
@@ -207,10 +208,27 @@ public class Graph{
 
   public String toString(){
     String out = "";
-    out += "WHITE GRAPH\n==========================\n";
+    try{
+      out += "WHITE GRAPH\n==========================\n";
+      DListNode walker = (DListNode)this.whiteGraph.front();
+      while(walker.isValidNode()){
+        out += ((Chip)walker.item()).toString() + "\n";
+        walker = (DListNode)walker.next();
+      }
+      out += "white totalEdeges:" + this.getWhiteNumOfEdges() + "\n";
+
+      out += "\nBLACK GRAPH\n==========================\n";
+      walker = (DListNode)this.blackGraph.front();
+      while(walker.isValidNode()){
+        out += ((Chip)walker.item()).toString() + "\n";
+        walker = (DListNode)walker.next();
+      }
+      out += "black totalEdeges:" + this.getBlackNumOfEdges() + "\n";
+    }catch(InvalidNodeException e){
+      System.out.println(e);
+    }
     return out;
   }
-
 
 /*
   private boolean depthFirstSearch(DList givenGraph, Chip start, int color){
