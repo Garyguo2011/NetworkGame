@@ -46,6 +46,12 @@ public class MachinePlayer extends Player {
     presentChips = 0;
   }
 
+  public MachinePlayer(int color, Board givenBoard, int searchDepth){
+    this.color = color;
+    this.board = givenBoard;
+    this.searchDepth = searchDepth;
+  }
+
   // Creates a machine player with the given color and search depth.  Color is
   // either 0 (black) or 1 (white).  (White has the first move.)
 
@@ -223,7 +229,6 @@ public class MachinePlayer extends Player {
   public static void main(String[] argv){
     Board gameBoard = new Board();
     gameBoard.setElementAt(1, 0, BLACK);
-    gameBoard.setElementAt(2, 1, WHITE);
     gameBoard.setElementAt(0, 2, WHITE);
     gameBoard.setElementAt(1, 2, BLACK);
     gameBoard.setElementAt(6, 2, BLACK);
@@ -231,8 +236,9 @@ public class MachinePlayer extends Player {
     gameBoard.setElementAt(1, 6, WHITE);
     gameBoard.setElementAt(4, 6, WHITE);
     gameBoard.setElementAt(6, 7, BLACK);
-    gameBoard.setElementAt();
-    MachinePlayer machine = new MachinePlayer()
+    MachinePlayer machine = new MachinePlayer(WHITE, gameBoard, 1);
+    machine.chooseMove();
+    System.out.println(gameBoard);
   }
 
 }
