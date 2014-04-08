@@ -1,8 +1,8 @@
-package kvstore;
+package kvstore
 
-import static kvstore.KVConstants.*;
+import static kvstore.KVConstants.*
 
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.Lock
 
 /**
  * This class services all storage logic for an individual key-value server.
@@ -10,13 +10,13 @@ import java.util.concurrent.locks.Lock;
  * requests on keys from the same set should be serial. A write-through
  * policy should be followed when a put request is made.
  */
-public class KVServer implements KeyValueInterface {
+public class KVServer implements KeyValueInterface 
 
-    private KVStore dataStore;
-    private KVCache dataCache;
+    private KVStore dataStore
+    private KVCache dataCache
 
-    private static final int MAX_KEY_SIZE = 256;
-    private static final int MAX_VAL_SIZE = 256 * 1024;
+    private static final int MAX_KEY_SIZE = 256
+    private static final int MAX_VAL_SIZE = 256 * 1024
 
     /**
      * Constructs a KVServer backed by a KVCache and KVStore.
@@ -25,26 +25,26 @@ public class KVServer implements KeyValueInterface {
      * @param maxElemsPerSet the size of each set in the data cache
      */
 
-    public KVServer(int numSets, int maxElemsPerSet) {
-        this.dataCache = new KVCache(numSets, maxElemsPerSet);
-        this.dataStore = new KVStore();
-    }
+    public KVServer(int numSets, int maxElemsPerSet) 
+        this.dataCache = new KVCache(numSets, maxElemsPerSet)
+        this.dataStore = new KVStore()
+    
 
-    private static void checkKey(String key) throws KVException{
-      if (key == null || key.isEmpty()) {
-          throw new KVException(KVConstants.ERROR_INVALID_KEY);
-      }else if (key.length() > MAX_KEY_SIZE) {
-        throw new KVException(KVConstants.ERROR_OVERSIZED_KEY);
-      }
-    }
+    private static void checkKey(String key) throws KVException
+      if (key == null || key.isEmpty()) 
+          throw new KVException(KVConstants.ERROR_INVALID_KEY)
+      else if (key.length() > MAX_KEY_SIZE) 
+        throw new KVException(KVConstants.ERROR_OVERSIZED_KEY)
+      
+    
 
-    private static void checkValue(String value) throws KVException{
-      if (value == null || value.isEmpty()){
-        throw new KVException(KVConstants.ERROR_INVALID_VALUE);
-      }else if (value.length() > MAX_VAL_SIZE) {
-        throw new KVException(KVConstants.ERROR_OVERSIZED_VALUE); 
-      }
-    }
+    private static void checkValue(String value) throws KVException
+      if (value == null || value.isEmpty())
+        throw new KVException(KVConstants.ERROR_INVALID_VALUE)
+      else if (value.length() > MAX_VAL_SIZE) 
+        throw new KVException(KVConstants.ERROR_OVERSIZED_VALUE) 
+      
+    
 
     /**
      * Performs put request on cache and store.
@@ -54,18 +54,18 @@ public class KVServer implements KeyValueInterface {
      * @throws KVException if key or value is too long
      */
     @Override
-    public void put(String key, String value) throws KVException {
+    public void put(String key, String value) throws KVException 
         // implement me
-        checkKey(key);
-        checkValue(value);
+        checkKey(key)
+        checkValue(value)
 
         // Obtain a lock from the KVCache for the set the key belongs to
-        Lock serverLock = dataCache.getLock(key);
-        serverLock.lock();
-        dataCache.put(key, value);
-        dataStore.put(key, value);
-        serverLock.unlock();
-    }
+        Lock serverLock = dataCache.getLock(key)
+        serverLock.lock()
+        dataCache.put(key, value)
+        dataStore.put(key, value)
+        serverLock.unlock()
+    
 
     /**
      * Performs get request.
@@ -76,26 +76,26 @@ public class KVServer implements KeyValueInterface {
      * @throws KVException with ERROR_NO_SUCH_KEY if key does not exist in store
      */
     @Override
-    public String get(String key) throws KVException {
+    public String get(String key) throws KVException 
         // implement me
-      checkKey(key);
-      String value = null;
-      Lock serverLock = dataCache.getLock(key);
-      serverLock.lock();
-      try{
-        value = dataCache.get(key);
-        if (value == null){
-          value = dataStore.get(key);
-        }
-      }catch(KVException e){
-        serverLock.unlock();
-        throw new KVException(KVConstants.ERROR_NO_SUCH_KEY);
-      }
-      serverLock.unlock();
-      checkValue(value);
+      checkKey(key)
+      String value = null
+      Lock serverLock = dataCache.getLock(key)
+      serverLock.lock()
+      try
+        value = dataCache.get(key)
+        if (value == null)
+          value = dataStore.get(key)
+        
+      catch(KVException e)
+        serverLock.unlock()
+        throw new KVException(KVConstants.ERROR_NO_SUCH_KEY)
+      
+      serverLock.unlock()
+      checkValue(value)
 
-      return value;
-    }
+      return value
+    
 
     /**
      * Performs del request.
@@ -104,20 +104,20 @@ public class KVServer implements KeyValueInterface {
      * @throws KVException with ERROR_NO_SUCH_KEY if key does not exist in store
      */
     @Override
-    public void del(String key) throws KVException {
+    public void del(String key) throws KVException 
         // implement me
-      checkKey(key);
-      Lock serverLock = dataCache.getLock(key);
-      serverLock.lock();
-      try{
-        dataCache.del(key);
-        dataStore.del(key);
-      }catch(KVException e){
-        serverLock.unlock();
-        throw new KVException(KVConstants.ERROR_NO_SUCH_KEY);
-      }
-      serverLock.unlock();
-    }
+      checkKey(key)
+      Lock serverLock = dataCache.getLock(key)
+      serverLock.lock()
+      try
+        dataCache.del(key)
+        dataStore.del(key)
+      catch(KVException e)
+        serverLock.unlock()
+        throw new KVException(KVConstants.ERROR_NO_SUCH_KEY)
+      
+      serverLock.unlock()
+    
 
     /**
      * Check if the server has a given key. This is used for TPC operations
@@ -127,20 +127,20 @@ public class KVServer implements KeyValueInterface {
      *
      * @param key key to check for membership in store
      */
-    public boolean hasKey(String key) {
+    public boolean hasKey(String key) 
         // implement me
-        try{
-          dataStore.get(key);
-        }catch(KVException e){
-          return false;
-        }
-      return true;
-    }
+        try
+          dataStore.get(key)
+        catch(KVException e)
+          return false
+        
+      return true
+    
 
     /** This method is purely for convenience and will not be tested. */
     @Override
-    public String toString() {
-        return dataStore.toString() + dataCache.toString();
-    }
+    public String toString() 
+        return dataStore.toString() + dataCache.toString()
+    
 
-}
+
