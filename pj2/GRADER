@@ -68,4 +68,45 @@ sure to modify this file to reflect these changes before you submit your
 project.  Your design of classes and interfaces will be worth 10% of your
 grade.
 
+Best class (Best.java):
+  Best class used inside in minimax game tree search. keep track the best score and best move druiing search.
+
+Board class (Board.java):
+  Broad class that implements an 8x8 game board with three possible values.
+
+Chip class (Chip.java):
+  Chip class represents chips on the board, and contain a Dlist to store its connections, which will be used
+
+Graph class (Graph.java):
+  Store all connections of a game board into 
+MachinePlayer class (MachinePlayer.java)
+Move class (Move.java)
+Player class (Player.java)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

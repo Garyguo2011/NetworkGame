@@ -1,7 +1,10 @@
 /* Best.java */
 
 package player;
-
+/**
+  * Best class used inside in minimax game tree search. keep track the best score and best
+  * move druiing search.
+  **/
 public class Best{
   private Move bestMove;
   private int bestScore;

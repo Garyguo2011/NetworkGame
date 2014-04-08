@@ -1,0 +1,867 @@
+                                     GRADER
+
+Name of student running submit: Xu He
+Login of student running submit: cs61b-axv
+
+Second team member's name: Xinran Guo
+Second team member's login: cs61b-ze
+
+Third team member's name (if any):
+Third team member's login:
+
+IMPORTANT:  Once you've submitted Project 2 once, the same team member should
+submit always.  If a different teammate must submit, inform cs61b@cory.eecs of
+all the details.  Include a complete list of team members, and let us know
+which submission you want graded.
+
+If you've submitted your project once, or even written a substantial amount of
+code together, you may not change partners without the permission of the
+instructor.
+===============================================================================
+Does your program compile without errors?
+A: Yes.
+
+Have you tested your program on the 61B lab machines?
+A: Yes.
+
+
+Did you successfully implement game tree search?  Did you successfully
+implement alpha-beta pruning?  Are there any limitations on it?  What is the
+default number of search levels set by the one-parameter MachinePlayer
+constructor (or is it a variable-depth search)?
+A: Yes. The default search depth is 3.
+
+
+Describe your board evaluation function in some detail.
+A: We first find all the connections for each chip present on the board. Then we sum up the connections 
+   for the chips with the same colors. Then we subtract machine player's total connections with opponent's 
+   total connections. And finally we multiply the result by two.
+
+
+Does your MachinePlayer use any special method of choosing the first few moves?
+A: No
+
+
+Is there anything else the graders should know to help them read your project?
+A: If the chooseMove() find out that the next opponent's move will result in a lose, it will find potential 
+   position and add a chip to block the potential connection.
+
+
+
+Describe the classes, modules, and interfaces you designed before and while you
+implemented the project.  Your description should include:
+  -  A list of the classes your program uses.
+  -  A list of each of the "modules" used in or by MachinePlayer, similar to
+     the list in the "Teamwork" section of the README (but hopefully more
+     detailed).  (If you're using a list class, that should probably count as
+     a separate module.)
+  -  For each module, list the class(es) the module is implemented in.
+  -  For each module, say which of your team members implemented it.
+  -  For each module, describe its interface--specifically, the prototype and
+     behavior of each method that is available for external callers (outside
+     the module) to call.  Don't include methods that are only meant to be
+     called from within the module.
+
+     For each method, provide (1) a method prototype and (2) a complete,
+     unambiguous description of the behavior of the method/module.  This
+     description should also appear before the method in your code's comments.
+
+You will probably need to change some of your design decisions as you go; be
+sure to modify this file to reflect these changes before you submit your
+project.  Your design of classes and interfaces will be worth 10% of your
+grade.
+
+###########################
+##### ALL THE CLASSES #####
+###########################
+*******************************************************************************************************
+/**
+ *
+ * Best class used inside in minimax game tree search. keep track the best score and best move 
+ * druiing search
+ *
+ **/
+Best class (Best.java):
+  /**
+   *  Constructe a new Best to store the current bestscore and best move
+   *
+   *  @return a new best class
+   *          
+   **/  
+  protected Best();
+
+  /**
+   *  Constructe a new Best to store the current bestscore and best move
+   *
+   * @param m is the move that needs to set to the bestMove field of this object
+   * @param score is the value that needs to set to the bestScore field of this object 
+   * @return a new best class
+   *          
+   **/
+  protected Best(Move m, int score);
+
+  /**
+   *  setBestMove(Move m) set the bestMove field to the input Move m.
+   *
+   *  @param m is the move that needs to set to the bestMove field of this object
+   *          
+   **/
+   protected void setBestMove(Move m);
+
+
+   /**
+   *  setBestScore(int score) set the bestScore field to the input score.
+   *
+   *  @param score is the value that needs to set to the bestScore field of this object
+   *          
+   **/
+   protected void setBestScore(int score);
+
+
+   /**
+   *  getBestMove() gets the bestMove field of "this" object
+   *
+   *  @return this.bestMove the bestMove field of "this" object
+   *          
+   **/
+   protected Move getBestMove();
+
+
+  /**
+   *  getBestScore() gets the bestScore field of "this" object
+   *
+   *  @return this.bestScore the bestScore field of "this" object
+   *          
+   **/
+   protected int getBestScore();
+
+
+********************************************************************************************************
+/**
+ *
+ * Board class contains a 2D array that implements an 8x8 game board with three possible values.
+ *
+ **/
+Board class (Board.java):
+
+  /**
+   *  Construct a new board in which all cells are empty.
+   * @return a new Board
+   */
+  public Board();
+
+  /**
+   * Constructor that Duplicate a game board base on the previous one
+   * used by game tree search
+   * @param givenBoard a board contain given information
+   * @return  a new duplicated board
+   **/
+  public Board(Board givenBoard);
+
+  /**
+   *  elementAt(int x, int y) gets the valued stored in grid(x, y).
+   *
+   *  @param x is the x-index.
+   *  @param y is the y-index.
+   *  @return the stored value (between 0 and 2).
+   *  
+   */
+  public int elementAt(int x, int y);
+
+  /**
+   *  setElementAt(int x, int y, int value) sets the grid(x, y) in the board to the given value.
+   *
+   *  @param value to the color that occupies this position (WHITE, BLACK, EMPTY).
+   *  @param x is the x-index.
+   *  @param y is the y-index.
+   *
+   *
+   **/
+  public void setElementAt(int x, int y, int value);
+
+
+  **
+   *  setBoard(Move curMove, int color) sets the board with the input move and its color.
+   *
+   *  @param curMove is the Move that needs to be set to the board.
+   *  @param color is the color of the input move.
+   *
+   * 
+   **/
+  public void setBoard(Move curMove, int color);
+
+
+  **
+   *  getChips(int color) obtains all the present chips in the current board of the input color.
+   *
+   *  @param color specifies which color the obtained chips should be
+   *  @return chips is a doubly linked list that contains all the chips in the board of the input color.
+   *
+   * 
+   **/
+  public DList getChips(int color);
+
+
+  **
+   *  getNumOfChips(int color) obtains the number of chips in the current board of the input color.
+   *
+   *  @param color specifies which color the number of chips obtained should be
+   *  @return num is the number of chips of the input color in the current board.
+   *
+   * 
+   **/
+  public DList getChips(int color);
+
+
+  /**
+    * evaluate(int color) assigns a score to each board htat estimates how well your
+    * MachinePlayer is doing.
+    * 
+    * Assign a maximum positive score to a win by your MachinePlayer
+    * Assign a minimum negative score to a win by the Opponent
+    * Assign an intermediate score to a board where neither player has completed
+    * a network.
+    * Assign a slightly higher score to a win in one move than to a win in three
+    * moves
+    *
+    * Might count how many pairs of your chips can see each other, and subtract
+    * the opponent's pairs
+    * 
+    *  @param color specifies which color in the board should be evaluated.s
+    *  @return a score that represents how good is the current network to win.
+    * 
+    **/
+  public int evaluate(int color);
+
+
+  /**
+   *  equals(Object board) returns true if "this" Board and "board" have identical values in
+   *    every grid.
+   *  @param board is the simple board that "this" board should compare to.
+   *  @return true if the boards are equal, false otherwise.
+   */
+  public boolean equals(Object board);
+
+
+  /** 
+    * isLegalMove(Move m, int color) determine whether a Move m is legal move or not by calling legalTest1(), 
+    * legalTest2(), legalTest3(), and legalTest4().
+    *
+    * @param m is a Move
+    * @param color is the color that the input move belongs to
+    * @return true if m is legal m otherwise false.
+    *
+    **/
+  public boolean isLegalMove(Move m, int color);
+
+  /** 
+    * legalMoveList(int color) generates all the legal move of the input color in the current board in a 
+    * doubly linked list. 
+    *
+    * @param color spcifies which color's legal moves need to be generated
+    * @return legalList is a doubly linked list that contains all the legal moves of the input color
+    *
+    **/
+  protected DList legalMoveList(int color);
+
+*******************************************************************************************************
+/**
+ *
+ * Chip class represents chips on the board, which has its x- and y- index, its color, the board it belongs  
+ * to, a boolean indicates whether it is visited or not, and a Dlist to store its connections, which will be 
+ * used by the graph class.
+ *
+ **/
+Chip class (Chip.java):
+	 /**
+	  * Construct a new chips with position and the board it locate
+	  * 
+	  * @param x location at x
+	  * @param y location at y
+	  * @param color the chip color
+	  * @param board the board that this chip located
+	  *
+	  * @return a new chip
+	  **/
+	public Chip(int x, int y, int color, Board board);
+
+
+  /**
+   *  setVisited(boolean visited) changes whether the chip is visited or not in DFS.
+   *
+   *  @param visited is the input boolean value to set isVisited field.
+   *          
+   **/
+  public void setVisited(boolean visited);
+
+
+  /**
+   *  getVisited() obtains whether "this" chip is visited or not.
+   *
+   *  @return this.visited indicates whether "this" chip is visited or not.
+   *          
+   **/
+  public boolean getVisited();
+
+
+  /**
+   *  getX() obtains the x-index of "this" chip.
+   *
+   *  @return this.x indicates the x-index of "this" chip.
+   *          
+   **/
+  public int getX();
+
+
+  /**
+   *  getY() obtains the y-index of "this" chip.
+   *
+   *  @return this.y indicates the y-index of "this" chip.
+   *          
+   **/
+  public int getY();
+
+
+  /**
+   *  getColor() obtains the color of "this" chip.
+   *
+   *  @return this.color indicates the color of "this" chip.
+   *          
+   **/
+  public int getColor();
+
+
+  /**
+   *  getBoard() obtains the board that "this" chip belongs to.
+   *
+   *  @return this.board specifies the board that "this" chip belongs to.
+   *          
+   **/
+  public int getBoard();
+
+
+  /**
+   *  getEdges() obtains a doubly linked list that contains all the chips that are connected to "this" chip.
+   *
+   *  @return this.edges is a doubly linked list that contains all the chips that are connected to "this" chip
+   *          
+   **/
+  public int getEdges();
+
+
+  /**
+   *  getNumOfEdges() obtains how many chips that are connected to "this" chip.
+   *
+   *  @return this.edges.length() specifies how many elements in the doubly linked list.
+   *          
+   **/
+  public int getNumOfEdges();
+
+
+  /**
+   * addEdge(Chip other) set the input edge as an edge to "this" chip 
+   *
+   * @param other is the input chip that is an edge to "this" chip
+   *
+   *
+   **/
+  public void addEdge(Chip other);
+
+
+  /**
+   * isStartGoal() determine whether "this" chip is in its own starting goal area.
+   *
+   * @return true if it is in the starting goal area, and false otherwise
+   *
+   *
+   **/
+  public boolean isStartGoal();
+
+
+  /**
+   * isEndGoal() determine whether "this" chip is in its own end goal area.
+   *
+   * @return true if it is in the end goal area, and false otherwise
+   *
+   *
+   **/
+  public boolean isEndGoal();
+
+
+  /**
+   * equals(Chip other) determines whether the input chip is the same as "this" chip
+   *
+   * @param other is the chip that needs to be compared with "this" chip
+   * @return true if "this" chip is the same as the input chip, and false otherwise.
+   *
+   **/
+  public boolean equals(Chip other);
+
+
+  /**
+   * isConnected(Chip other) determines whether the input chip is connected (in straght line with and other 
+   *  chips in between) "this" chip
+   *
+   * @param other is the chip need to be determined with "this" chip
+   * @return true if "this" chip is connected with the input chip
+   *
+   **/
+  protected boolean isConnected(Chip other);
+
+*********************************************************************************************************
+/**
+ *
+ * Graph class Store all connections of a game board into a doubly linked list of each color, each node is a 
+ * chip object so that we can perform DFS to find all the networks. It also knows which board it corresponds 
+ * to.
+ *
+ **/
+Graph class (Graph.java):
+	 /**
+  	* construct a graph that will be used for bfs.
+    * @param board the board that used to build graph
+    * @return a graph that contain all connection
+  	**/
+  public Graph(Board board);
+
+  /**
+   *
+   * isWin(int color) determines whether chips of the input color can win in the current board
+   *
+   * @param color specifies which side of chips needs to be determined.
+   * @return true if the chips of the input color can win in the current board, and false otherwise
+   *
+   **/
+  public boolean isWin(int color);
+
+  /**
+   *
+   * isLose(int color) determines whether chips of the input color will lose (opponent win) in the current   
+   * board
+   *
+   * @param color specifies which side of chips needs to be determined.
+   * @return true if the chips of the input color will lose in the current board, and false otherwise
+   *
+   **/
+  public boolean isLose(int color);
+
+*********************************************************************************************************
+/**
+ *
+ * Machine Player class represent the machine player in the game, which implement how to choose the next move 
+ * using minimax search. Each machine player should have the current board, its color, the searchDepth for   
+ * minimax search.
+ *
+ **/
+MachinePlayer class (MachinePlayer.java):
+
+  /**
+  * Construct a new MachinePlayer with given board and search depth for test
+  * Creates a machine player with the given color.  Color is either 0 (black)
+  * or 1 (white).  (White has the first move.)
+  * @param color the color that machine player use
+  * @param givenBoard a game board contain given information
+  * @param searchDepth a constant that control minimax depth
+  **/
+  public MachinePlayer(int color);
+
+  /** 
+    * Creates a machine player with the given color and search depth.  Color is
+    * either 0 (black) or 1 (white).  (White has the first move.)
+    * searchDepth ONE => 
+    * Your machinePlayer considers all teh moves and chooses
+    * the one that yields the "best" board.
+    *
+    * SearchDepth TWO => 
+    * you consider your opponent's response as well, and choose
+    * the move that will yield the "best" board after your opponent makes the best
+    * move available to it
+    * 
+    * SearchDepth THREE =>
+    * you consider two MachinePlayer moves and one opponent move betweeen them
+    **/
+  public MachinePlayer(int color, int searchDepth);
+
+  /**
+    * Construct a new MachinePlayer with given board and search depth for test
+    * 
+    * @param color the color that machine player use
+    * @param givenBoard a game board contain given information
+    * @param searchDepth a constant that control minimax depth
+    * 
+    **/
+  public MachinePlayer(int color, Board givenBoard, int searchDepth);
+
+  /**
+   *  getColor() gets the color of MachinePlayer color
+   *
+   *  @return color of MachinePlayer color
+   *          
+   **/
+  public int getColor();
+
+  /**
+   *  getBoard() gets the color of MachinePlayer board
+   *
+   *  @return color of MachinePlayer board
+   *          
+   **/
+  public Board getBoard();
+
+  /**
+   *  getHumanColor() gets the color of MachinePlayer.HUMAN
+   *
+   *  @return color of MachinePlayer.HUMAN
+   *          
+   **/
+  public int getHumanColor();
+
+  /**
+   *  chooseMove() determines the next move made by machine player by calling minimax search.
+   *  
+   *
+   *  @return the best move from the minimax search
+   *          
+   **/
+  public Move chooseMove();
+
+
+  /**
+   *  opponentMove(Move m) determines if the opponent's move m is legal and update the board
+   *
+   *  Unusual conditions:
+   *    If the move is illegal, return false.
+   *
+   *  @param m is the move proposed by the opponent
+   *  @return true if opponent's move is legal
+   *          
+   **/
+   public boolean opponentMove(Move m);
+
+
+   /**
+   *  forceMove(Move m) determines if the "this" player's move m is legal and update the board
+   *
+   *  Unusual conditions:
+   *    If the move is illegal, return false.
+   *
+   *  @param m is the move proposed by the opponent
+   *  @return true if "this" player's move is legal
+   *          
+   **/
+   public boolean forceMove(Move m);
+
+*******************************************************************************************************
+	/**
+	 *  A public class for holding all the fields in a move.  This class is a
+	 *  container for data, not an ADT; hence, all fields are public.
+	 *
+	 *  The moveKind field stores the type of move.  The x-coordinates index the
+	 *  horizontal direction (left to right) and the y-coordinates index the
+	 *  vertical direction (top to bottom).  x- and y-coordinates start at zero.
+	 *
+	 *  DO NOT CHANGE THIS FILE.
+	 */
+	Move class (Move.java)
+
+
+******************************************************************************************************
+/**
+ *  A class that is extended by all Network players (human and machine).
+ *
+ *  DO NOT CHANGE THIS FILE.
+ */
+Player class (Player.java)
+
+  // This player's name as recognized by the game Network.
+  public String myName;
+
+  // Returns a new move by "this" player.  Internally records the move (updates
+  // the internal game board) as a move by "this" player.
+  public abstract Move chooseMove();
+
+  // If the Move m is legal, records the move as a move by the opponent
+  // (updates the internal game board) and returns true.  If the move is
+  // illegal, returns false without modifying the internal state of "this"
+  // player.  This method allows your opponents to inform you of their moves.
+  public abstract boolean opponentMove(Move m);
+
+  // If the Move m is legal, records the move as a move by "this" player
+  // (updates the internal game board) and returns true.  If the move is
+  // illegal, returns false without modifying the internal state of "this"
+  // player.  This method is used to help set up "Network problems" for your
+  // player to solve.
+  public abstract boolean forceMove(Move m);
+
+
+********************************************************************************************************
+
+###########################
+##### ALL THE MODULES #####
+###########################
+
+*******************************************************************************************************
+  -------------------------------------------------------------------------------------------
+  1)  determining whether a move is valid (in Board class) 
+  -------------------------------------------------------------------------------------------
+  --> [Implemented by  Xu He]
+  /** 
+    * isLegalMove(Move m, int color) determine whether a Move m is legal move or not by calling legalTest1(), 
+    * legalTest2(), legalTest3(), and legalTest4().
+    *
+    * @param m is a Move
+    * @param color is the color that the input move belongs to
+    * @return true if m is legal m otherwise false.
+    *
+    **/
+  public boolean isLegalMove(Move m, int color);
+
+
+  /** 
+    * legalTest1(Move test) determines whether a move is placed in any of the four corner. 
+    *             
+    * @param testMove is the move that is being tested.
+    * @return true if the move is not in the four corners, and false otherwise.
+    **/
+  private boolean legalTest1(Move testMove);
+
+
+  /** 
+    * legalTest2(Move testMove, int testColor) determines whether a move is placed in a goal of the opposite 
+    * color.
+    * 
+    * @param testMove is the move that is being tested
+    * @param testColor is the color that the testMove belongs to
+    * @return true if the move is not in opponent's goal area, and false otherwise.
+    *
+    **/
+  private boolean legalTest2(Move testMove, int testColor);
+
+
+  /** 
+    * legalTest3(Move testMove) determines whether a move is placed in a square that is alread occupied
+    * 
+    * @param testMove is the move that is being tested
+    * @return true if the move is not placed in a square that is already occupied, and false otherwise.
+    *
+    **/
+  private boolean legalTest3(Move testMove);
+
+
+  /** 
+    * legalTest4() determines whether this move will form a chain with the other two moves
+    * 
+    * @param testMove is the move that is being tested
+    * @param testColor is the color that the testMove belongs to
+    * @return true if this move does not form a chain with the other two moves, and false otherwise.
+    *
+    **/
+  private boolean legalTest4(Move testMove, int testColor);
+
+
+************************************************************************************************************
+  -------------------------------------------------------------------------------------------
+  2)  generating a list of all valid moves (in Board class) 
+  -------------------------------------------------------------------------------------------
+  --> [Implemented by  Xu He]
+  /** 
+    * legalMoveList(int color) generates all the legal move of the input color in the current board in a 
+    * doubly linked list. 
+    *
+    * @param color spcifies which color's legal moves need to be generated
+    * @return legalList is a doubly linked list that contains all the legal moves of the input color
+    *
+    **/
+  protected DList legalMoveList(int color);
+
+**********************************************************************************************************
+  -------------------------------------------------------------------------------------------
+  3)  finding the chips (of the same color) that form connections with a chip (in Chip class)
+  -------------------------------------------------------------------------------------------
+  --> [Implemented by  Xinran Guo]
+
+  /**
+   * addEdge(Chip other) set the input edge as an edge to "this" chip 
+   *
+   * @param other is the input chip that is an edge to "this" chip
+   *
+   *
+   **/
+  public void addEdge(Chip other);
+
+  /**
+   * isConnected(Chip other) determines whether the input chip is connected (in straght line with and other 
+   *  chips in between) "this" chip
+   *
+   * @param other is the chip need to be determined with "this" chip
+   * @return true if "this" chip is connected with the input chip
+   *
+   **/
+  protected boolean isConnected(Chip other);
+
+
+***********************************************************************************************************
+  -------------------------------------------------------------------------------------------
+  4)  determining whether a game board contains any networks for a given player. (in Graph class)
+  -------------------------------------------------------------------------------------------
+  --> [Implemented by  Xinran Guo]
+
+  /**
+   *
+   * buildGraph(int color) obtains a doubly linked list that is the graph of the input color in the board.
+   *
+   * @param color specifies to build the graph
+   * @return graph a doubly linked list that contains the graph of the input color
+   *
+   **/
+  private DList buildGraph(int color);
+
+
+  /**
+   *
+   * isWin(int color) determines whether chips of the input color can win in the current board
+   *
+   * @param color specifies which side of chips needs to be determined.
+   * @return true if the chips of the input color can win in the current board, and false otherwise
+   *
+   **/
+  public boolean isWin(int color);
+
+
+  /**
+   *
+   * isLose(int color) determines whether chips of the input color will lose (opponent win) in the current   
+   * board
+   *
+   * @param color specifies which side of chips needs to be determined.
+   * @return true if the chips of the input color will lose in the current board, and false otherwise
+   *
+   **/
+  public boolean isLose(int color);
+
+
+  /**
+   *
+   * dfsWhite() finds all the chips in WHITE color's starting goal area and start implementing DFS to        
+   * determine if there is network in the board
+   *
+   * @return true if there is a network of WHITE color in the current board, and false otherwise
+   *
+   *
+   **/
+  private boolean dfsWhite();
+
+
+  /**
+   *
+   * dfsBlack() finds all the chips in BLACK color's starting goal area and start implementing DFS to
+   * determine if there is network in the board
+   *
+   * @return true if there is a network of BLACK color in the current board, and false otherwise
+   *
+   *
+   **/
+  private boolean dfsBlack();
+
+
+  /**
+   *
+   * depthFirstSearch(DList givenGraph, Chip start) is the initialization of the DFS (set all chip in the    
+   * graph to unvisited).
+   *
+   * @param givenGraph is a doubly linked list contains all the chips in the current board
+   * @param start is a chip at the starting goal area.
+   * @return the result of the actual implementation of DFS (next method)
+   *
+   **/
+  private boolean depthFirstSearch(DList givenGraph, Chip start);
+
+
+  /**
+   *
+   * depthFirstSearch (Chip prev, Chip start, int depth) is the actual implementation of DFS which process   
+   * the graph recursively.
+   *
+   * @param prev is the previous processed chip in DFS (father of the processing chip)
+   * @param start is the current processing chip
+   * @param depth is the DFS search level for each recursive process.
+   * @return true if DFS can find a network in the graph, and false otherwise.
+   *
+   **/
+  public boolean depthFirstSearch (Chip prev, Chip start, int depth);
+
+
+  /**
+   * isStright(Chip prev, Chip cur, Chip next) determines whether the three input chips form a straight line.
+   *
+   * @param prev is the first input chip
+   * @param cur is the second (middle) input chip
+   * @param next is the third input chip
+   * @return true if the three input chips form a straight line (both orthogonal and diagonal), and false    
+   * otherwise
+   *
+   **/
+  private boolean isStright(Chip prev, Chip cur, Chip next);
+
+
+***********************************************************************************************************
+  -------------------------------------------------------------------------------------------
+  5)  computing an evaluation function for a board. (in Board class)
+  -------------------------------------------------------------------------------------------
+  --> [Implemented by  Xinran Guo]
+
+  /**
+    * evaluate(int color) assigns a score to each board htat estimates how well your
+    * MachinePlayer is doing.
+    * 
+    * Assign a maximum positive score to a win by your MachinePlayer
+    * Assign a minimum negative score to a win by the Opponent
+    * Assign an intermediate score to a board where neither player has completed
+    * a network.
+    * Assign a slightly higher score to a win in one move than to a win in three
+    * moves
+    *
+    * Might count how many pairs of your chips can see each other, and subtract
+    * the opponent's pairs
+    * 
+    *  @param color specifies which color in the board should be evaluated.s
+    *  @return a score that represents how good is the current network to win.
+    * 
+    **/
+  public int evaluate(int color);
+
+
+***********************************************************************************************************
+  -------------------------------------------------------------------------------------------
+  6)  performing minimax tree search (difficult). (in MachinePlayer class)
+  -------------------------------------------------------------------------------------------
+  --> [Implemented by Xu He, and Xinran]
+
+  /**
+   *  chooseMove() determines the next move made by machine player by calling minimax search.
+   *  
+   *
+   *  @return the best move from the minimax search
+   *          
+   **/
+  public Move chooseMove() ;
+
+  /**
+   *  minimaxSearch(boolean side, int depth, int maxDepth, int alpha, int beta) determines the best
+   *  move the input side of the player can achieve by assigning scores to all the potential moves 
+   *  using alpha-beta pruning.
+   *
+   *
+   *  @param side is MachinePlayer.COMPUTER or MachinePlayer.HUMAN
+   *  @param depth is the current search depth of the minimax search
+   *  @param maxDepth is the maximum search depth one minimax search can reach
+   *  @param alpha is the best already explored score along the path to the root for maximizer
+   *  @param beta is the best already explored option along path to the root for minimizer
+   *         
+   *  @return Best object if the search find the maximum score with the proposed move.
+   *          
+   **/
+   private Best minimaxSearch(boolean side, int depth, int maxDepth, int alpha, int beta);
+
+
+***********************************************************************************************************

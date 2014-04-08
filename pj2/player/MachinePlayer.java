@@ -26,9 +26,6 @@ public class MachinePlayer extends Player {
   public final static int WHITE = 1;
   public final static int BLACK = 0;
 
-  public final static int WIN = Integer.MAX_VALUE;
-  public final static int LOSE = Integer.MIN_VALUE;
-
   /* return the color of the player*/
   public int getColor(){
     return this.color;
@@ -181,7 +178,7 @@ public class MachinePlayer extends Player {
     int beta = Integer.MAX_VALUE;
 /*
     currentScore = this.board.evaluate(this.color);
-    if (currentScore == WIN || currentScore == LOSE){
+    if (currentScore == Board.WIN || currentScore == Board.LOSE){
 
     }
 */
@@ -248,13 +245,13 @@ public class MachinePlayer extends Player {
     }
 
     // Base Case
-    if(score == WIN){
+    if(score == Board.WIN){
       best.setBestScore(score - depth);
       best.setBestMove(new Move());
 
       return best;
     }
-    if(score == LOSE){
+    if(score == Board.LOSE){
       best.setBestScore(score + depth);
       best.setBestMove(new Move());
       return best;
@@ -316,9 +313,9 @@ public class MachinePlayer extends Player {
 
   public static void main(String[] args){
     System.out.println("MachinePlayer Start Test here");
-    // test1();
+    test1();
     // test2();
-    test3();    
+    // test3();    
   }
 
   public static void test1 (){
@@ -345,9 +342,9 @@ public class MachinePlayer extends Player {
   }
 
   public static void printScore(int score){
-    if (score == WIN){
-      System.out.println("WIN");
-    }else if (score == LOSE) {
+    if (score == Board.WIN){
+      System.out.println("Board.WIN");
+    }else if (score == Board.LOSE) {
       System.out.println("LOSE");
     }else{
       System.out.println(score);
@@ -385,9 +382,9 @@ public class MachinePlayer extends Player {
     System.out.println(gameGraph.toString());
 
     int score = gameBoard.evaluate(WHITE); 
-    if (score == WIN){
+    if (score == Board.WIN){
       System.out.println("WIN");
-    }else if (score == LOSE) {
+    }else if (score == Board.LOSE) {
       System.out.println("LOSE");
     }else{
       System.out.println(score);
@@ -409,10 +406,10 @@ public class MachinePlayer extends Player {
     board.setElementAt(5, 3, BLACK);
     System.out.println(board);
     // int score = board.evaluate(BLACK);
-    // if (score == WIN){
-    //   System.out.println("WIN");
+    // if (score == Board.WIN){
+    //   System.out.println("Board.WIN");
     // }
-    // else if (score == LOSE){
+    // else if (score == Board.LOSE){
     //   System.out.println("LOSE");
     // }
     // else{
@@ -422,8 +419,6 @@ public class MachinePlayer extends Player {
     machine.chooseMove();
     System.out.println(board);
   }
-
-
 }
 
 

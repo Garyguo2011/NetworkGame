@@ -2,13 +2,12 @@
 
 package player;
 import list.*;
-import dict.*;
-
 
 /**
- * Broad class that implements an 8x8 game board with three possible values
- * for each cell: 0, 1, or 2.
- */
+ *
+ * Board class contains a 2D array that implements an 8x8 game board with three possible values.
+ *
+ **/
 public class Board {
   public final static int DIMENSION = 8;
   
@@ -20,8 +19,8 @@ public class Board {
   public final static int ADD = 1;
   public final static int STEP = 2;
 
-  public final static int WIN = -200;
-  public final static int LOSE = 200;
+  public final static int WIN = 200;
+  public final static int LOSE = -200;
 
   private int[][] grid;
 
@@ -37,6 +36,7 @@ public class Board {
 
   /**
    *  Construct a new board in which all cells are empty.
+   * @return a new Board
    */
   public Board(){
     this.grid = new int[DIMENSION][DIMENSION];
@@ -47,10 +47,12 @@ public class Board {
     } 
   }
 
-  /*
+  /**
    * Constructor that Duplicate a game board base on the previous one
    * used by game tree search
-   */
+   * @param givenBoard a board contain given information
+   * @return  a new duplicated board
+   **/
   public Board(Board givenBoard){
     this.grid = new int[DIMENSION][DIMENSION];
     for (int y = 0; y < DIMENSION; y++) {
@@ -61,20 +63,38 @@ public class Board {
   }
 
   /**
-   *  Set the cell (x, y) in the board to the given value.
-   *  @param value to which the element should be set (normally 0, 1, or 2).
+   *  elementAt(int x, int y) gets the valued stored in grid(x, y).
+   *
    *  @param x is the x-index.
    *  @param y is the y-index.
-   *  @exception ArrayIndexOutOfBoundsException is thrown if an invalid index
-   *  is given.
+   *  @return the stored value (between 0 and 2).
+   *  
+   */
+  public int elementAt(int x, int y) {
+    return grid[y][x];
+  }
+
+  /**
+   *  setElementAt(int x, int y, int value) sets the grid(x, y) in the board to the given value.
+   *
+   *  @param value to the color that occupies this position (WHITE, BLACK, EMPTY).
+   *  @param x is the x-index.
+   *  @param y is the y-index.
+   *
+   *
    **/
   public void setElementAt(int x, int y, int value) {
     grid[y][x] = value;
   }
 
-  /*
-   * Set game Bord according to input move, and mode
-   */
+  /**
+   *  setBoard(Move curMove, int color) sets the board with the input move and its color.
+   *
+   *  @param curMove is the Move that needs to be set to the board.
+   *  @param color is the color of the input move.
+   *
+   * 
+   **/
   public void setBoard(Move curMove, int color){
     if (curMove.moveKind == ADD){
       this.setElementAt(curMove.x1, curMove.y1, color);
@@ -84,11 +104,15 @@ public class Board {
     }
   }
 
+
   /**
-    * getChips() generate a list of chips with given color
-    * 
-    * @return a list of chips with given color
-    **/
+   *  getChips(int color) obtains all the present chips in the current board of the input color.
+   *
+   *  @param color specifies which color the obtained chips should be
+   *  @return chips is a doubly linked list that contains all the chips in the board of the input color.
+   *
+   * 
+   **/  
   public DList getChips(int color){
     DList chips = new DList();
     for (int j = 0; j < DIMENSION; j++) {
@@ -103,8 +127,13 @@ public class Board {
 
 
   /**
-    * @return a number of chips of given color
-    **/
+   *  getNumOfChips(int color) obtains the number of chips in the current board of the input color.
+   *
+   *  @param color specifies which color the number of chips obtained should be
+   *  @return num is the number of chips of the input color in the current board.
+   *
+   * 
+   **/
   public int getNumOfChips(int color){
     int num = 0;
     for (int j = 0; j < DIMENSION; j++) {
@@ -117,16 +146,20 @@ public class Board {
     return num;
   }
 
+  /**
+   * getGraph() obtains a corresponding graph object to "this" board
+   *
+   * @return new Graph(this) is the graph corresponding to "this" board/
+   *
+   *
+   **/
   public Graph getGraph(){
     return new Graph(this);
   }
 
-
-  //=========================================================================
-  //======== (5) Computing an evaluation function for a board ===============
-  //=========================================================================  
+ 
   /**
-    * evaluate() assigns a score to each board htat estimates how well your
+    * evaluate(int color) assigns a score to each board htat estimates how well your
     * MachinePlayer is doing.
     * 
     * Assign a maximum positive score to a win by your MachinePlayer
@@ -139,19 +172,21 @@ public class Board {
     * Might count how many pairs of your chips can see each other, and subtract
     * the opponent's pairs
     * 
-    * @return a score that represents how good is the current network to win.
+    *  @param color specifies which color in the board should be evaluated.s
+    *  @return a score that represents how good is the current network to win.
     * 
     **/
   public int evaluate(int color){
     Graph graph = getGraph();
-    if(this.getNumOfChips(color) < 6){
+    /*
+    if(this.getNumOfChips(color) + this.getNumOfChips(1 - color) < 12){
       if(color == WHITE){
         return 2 * (graph.getWhiteNumOfEdges() - graph.getBlackNumOfEdges());
       }else{
         return 2 * (graph.getBlackNumOfEdges() - graph.getWhiteNumOfEdges());
       }
     }
-
+    */
     boolean colorIsWin = graph.isWin(color);
     boolean colorIsLose = graph.isLose(color);  
 
@@ -170,23 +205,10 @@ public class Board {
     }
   }
 
-//========== From simpleBoard ==========
   /**
-   *  Get the valued stored in cell (x, y).
-   *  @param x is the x-index.
-   *  @param y is the y-index.
-   *  @return the stored value (between 0 and 2).
-   *  @exception ArrayIndexOutOfBoundsException is thrown if an invalid index
-   *  is given.
-   */
-  public int elementAt(int x, int y) {
-    return grid[y][x];
-  }
-
-  /**
-   *  Returns true if "this" Board and "board" have identical values in
-   *    every cell.
-   *  @param board is the second SimpleBoard.
+   *  equals(Object board) returns true if "this" Board and "board" have identical values in
+   *    every grid.
+   *  @param board is the simple board that "this" board should compare to.
    *  @return true if the boards are equal, false otherwise.
    */
   public boolean equals(Object board) {
@@ -206,28 +228,13 @@ public class Board {
     return true;
   }
 
-  /**
-   *  Returns a hash code for this Board.
-   *  @return a number between Integer.MIN_VALUE and Integer.MAX_VALUE.
-   */
-  public int hashCode() {
-    // Replace the following line with your solution.
-    int code = 0;
-    int base = 1;
-    for (int i = 0; i < DIMENSION; i ++) {
-      for (int j = 0; j < DIMENSION; j++) {
-        code += (grid[i][j] * base + 1) * 107 * i * 97 * i * i 
-              + j * 101 * j * (grid[i][j] * base + 1) * (grid[i][j] * base + 2);
-        base *= 3;
-      }
-    }
-    return code;
-  }
 
-  /** 
-    * isLegalMove() determine whether a Move m is legal move or not.
-    * 
+   /** 
+    * isLegalMove(Move m, int color) determine whether a Move m is legal move or not by calling legalTest1(), 
+    * legalTest2(), legalTest3(), and legalTest4().
+    *
     * @param m is a Move
+    * @param color is the color that the input move belongs to
     * @return true if m is legal m otherwise false.
     *
     **/
@@ -237,7 +244,7 @@ public class Board {
         return false;
       this.setElementAt(m.x2, m.y2, EMPTY);
     }
-    if (this.legalTest1(m) == true && this.legalTest2(m, color) == true && this.legalTest3(m) == true && this.legalTest4(m, color) == true){
+    if (rangeTest(m) == true && this.legalTest1(m) == true && this.legalTest2(m, color) == true && this.legalTest3(m) == true && this.legalTest4(m, color) == true){
       this.setElementAt(m.x2, m.y2, color);
       return true;
 
@@ -246,9 +253,39 @@ public class Board {
     return false;
   }
 
+  /**
+    * 
+    * rangeTest() that test a move is on the range or not.
+    * 
+    * @param m a move that being test
+    * @return false if a move out of range, otherwise true
+    **/
+  private boolean rangeTest(Move m){
+    if (m.x1 < 0 || m.x1 > 7){
+      return false;
+    }
+
+    if (m.y1 < 0 || m.y1 > 7){
+      return false;
+    }
+
+    if (m.moveKind == STEP){
+      if (m.x2 < 0 || m.x2 > 7){
+        return false;
+      }
+
+      if (m.y2 < 0 || m.y2 > 7){
+        return false;
+      }
+    }
+    return true;
+  }
+
   /** 
-    * legalTest1() 
-    * whether a move is placed in any of the four corner.
+    * legalTest1(Move test) determines whether a move is placed in any of the four corner. 
+    *             
+    * @param testMove is the move that is being tested.
+    * @return true if the move is not in the four corners, and false otherwise.
     **/
   private boolean legalTest1(Move testMove){
     if (testMove.x1 == 0 && testMove.y1 == 0){
@@ -267,8 +304,13 @@ public class Board {
   }  
 
   /** 
-    * legalTest2() 
-    * whether a move is placed in a goal of the opposite color.
+    * legalTest2(Move testMove, int testColor) determines whether a move is placed in a goal of the opposite 
+    * color.
+    * 
+    * @param testMove is the move that is being tested
+    * @param testColor is the color that the testMove belongs to
+    * @return true if the move is not in opponent's goal area, and false otherwise.
+    *
     **/
   private boolean legalTest2(Move testMove, int testColor){
     if (testColor == WHITE){
@@ -287,8 +329,11 @@ public class Board {
   }
 
   /** 
-    * legalTest3() 
-    * whether a move is placed in a square that is alread occupied
+    * legalTest3(Move testMove) determines whether a move is placed in a square that is alread occupied
+    * 
+    * @param testMove is the move that is being tested
+    * @return true if the move is not placed in a square that is already occupied, and false otherwise.
+    *
     **/
   private boolean legalTest3(Move testMove){
     if (this.elementAt(testMove.x1, testMove.y1) == EMPTY){
@@ -300,9 +345,12 @@ public class Board {
   }
 
   /** 
-    * legalTest4()
-    * A player may not have more than two chips in a connect group,
-    * whether connected orthogonally or diagonally.
+    * legalTest4() determines whether this move will form a chain with the other two moves
+    * 
+    * @param testMove is the move that is being tested
+    * @param testColor is the color that the testMove belongs to
+    * @return true if this move does not form a chain with the other two moves, and false otherwise.
+    *
     **/
   private boolean legalTest4(Move testMove, int testColor){
     int countNeighbors = 0;
@@ -347,9 +395,14 @@ public class Board {
     return false;
   }
 
-  //=========================================================================
-  //============= (2) generating a list of all valid moves ==================
-  //=========================================================================
+  /** 
+    * legalMoveList(int color) generates all the legal move of the input color in the current board in a 
+    * doubly linked list. 
+    *
+    * @param color spcifies which color's legal moves need to be generated
+    * @return legalList is a doubly linked list that contains all the legal moves of the input color
+    *
+    **/
   protected DList legalMoveList(int color){
     DList legalList = new DList();
 
@@ -385,26 +438,6 @@ public class Board {
     }
     return legalList;
   }
-
-  public String toString(){
-    String out = "";
-    out += "    0 1 2 3 4 5 6 7\n";
-    for (int y = 0; y < DIMENSION; y++) {
-      out += y + " | ";
-      for (int x = 0; x < DIMENSION; x ++) {
-        if (grid[y][x] == WHITE){
-          out += "W ";
-        }else if (grid[y][x] == BLACK) {
-          out += "B ";
-        }else{
-          out += ". ";
-        }
-      }
-      out += "|\n";
-    }
-    return out;
-  }
-
 }
 
 
